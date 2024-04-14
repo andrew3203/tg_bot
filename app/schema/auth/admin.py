@@ -1,5 +1,5 @@
 from ..base_model import BaseModel
-from pydantic import Field
+from pydantic import Field, EmailStr
 
 
 class AdminLoginModel(BaseModel):
@@ -9,5 +9,16 @@ class AdminLoginModel(BaseModel):
         - `password`
     """
 
-    email: str = Field(description="Email")
+    email: EmailStr = Field(description="Email")
     password: str = Field(description="Password")
+
+
+class AdminSignupModel(AdminLoginModel):
+    """
+    Admin signup data
+        - `name`
+        - `email`
+        - `password`
+    """
+
+    name: str = Field(description="Name")
