@@ -1,0 +1,66 @@
+{
+  "name": "app",
+  "dockerComposeFile": ["../local.yml"],
+  "init": true,
+  "mounts": [
+    {
+      "source": "./.devcontainer/bash_history",
+      "target": "/home/dev-user/.bash_history",
+      "type": "bind"
+    },
+    {
+      "source": "/tmp",
+      "target": "/tmp",
+      "type": "bind"
+    },
+    {
+      "source": "~/.ssh",
+      "target": "/home/dev-user/.ssh",
+      "type": "bind"
+    }
+  ],
+  "overrideCommand": false,
+  "service": "fastapi",
+  "remoteUser": "dev-user",
+  "workspaceFolder": "/back",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "editor.formatOnSave": true,
+        "[python]": {
+          "analysis.autoImportCompletions": true,
+          "analysis.typeCheckingMode": "basic",
+          "defaultInterpreterPath": "/usr/local/bin/python",
+          "editor.defaultFormatter": "ms-python.black-formatter",
+          "formatting.blackPath": "/usr/local/bin/black",
+          "formatting.provider": "black",
+          "editor.codeActionsOnSave": {
+            "source.organizeImports": true
+          },
+          "languageServer": "Pylance",
+          "linting.banditPath": "/usr/local/py-utils/bin/bandit",
+          "linting.enabled": true,
+          "linting.flake8Enabled": true,
+          "linting.flake8Path": "/usr/local/bin/flake8",
+          "linting.mypyEnabled": true,
+          "linting.mypyPath": "/usr/local/bin/mypy",
+          "linting.pycodestylePath": "/usr/local/bin/pycodestyle",
+          "linting.pydocstylePath": "/usr/local/py-utils/bin/pydocstyle",
+          "linting.pylintEnabled": true,
+          "linting.pylintPath": "/usr/local/bin/pylint"
+        }
+      },
+      "extensions": [
+        "davidanson.vscode-markdownlint",
+        "mrmlnc.vscode-duplicate",
+        "visualstudioexptteam.vscodeintellicode",
+        "visualstudioexptteam.intellicode-api-usage-examples",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.isort",
+        "ms-python.black-formatter"
+      ]
+    }
+  },
+  "postCreateCommand": "cat .devcontainer/bashrc.override.sh >> ~/.bashrc"
+}

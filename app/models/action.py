@@ -1,0 +1,41 @@
+from typing import Any
+
+import sqlalchemy as sa
+from sqlmodel import Field
+
+from app.database import metadata
+from app.shema.action_type import ActionType
+
+from .base import BaseSQLModel
+
+
+class Action(BaseSQLModel, table=True, metadata=metadata):
+    """
+    Action:
+        - `id`
+        - `message_id`
+        - `action_type`
+        - `params`
+        - `name`
+        - `run_amount`
+        - `succeded_amount`
+        - `created_at`
+        - `updated_at`
+    """
+
+    __tablename__ = "action"
+    __verbouse_name__ = "Действие"
+
+    action_id: int = Field(primary_key=True, index=True, foreign_key="action.id")
+    message_id: int = Field(primary_key=True, index=True, foreign_key="message.id")
+
+    action_type: ActionType = Field(
+        sa_column=sa.Column(sa.String), description="Action type"
+    )
+    params: dict[str, Any] = Field(
+        description="Action params", sa_column=sa.Column(sa.JSON)
+    )
+
+    name: str = Field(description="Action name")
+    run_amount: int = Field(default=0, description="Run amount")
+    succeded_amount: int = Field(default=0, description="Succeded amount")

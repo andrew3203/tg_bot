@@ -1,0 +1,6 @@
+# PRECAUTION: avoid production dependencies that aren't in development
+
+-r base.txt
+
+gunicorn==21.2.0  # https://github.com/benoitc/gunicorn
+python-json-logger==2.0.7 # https://github.com/madzak/python-json-logger

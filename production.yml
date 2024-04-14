@@ -1,0 +1,37 @@
+version: "3"
+
+volumes:
+  production_postgres_data: {}
+  production_postgres_data_backups: {}
+  production_fastapi_media: {}
+
+services:
+  fastapi: &fastapi
+    build:
+      context: .
+      dockerfile: ./compose/production/fastapi/Dockerfile
+
+    image: app_production_fastapi
+    volumes:
+      - production_fastapi_media:/app/app/media
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - ./.envs/.production/.fastapi
+      - ./.envs/.production/.postgres
+    command: /start
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./compose/production/postgres/Dockerfile
+    image: app_production_postgres
+    volumes:
+      - production_postgres_data:/var/lib/postgresql/data
+      - production_postgres_data_backups:/backups
+    env_file:
+      - ./.envs/.production/.postgres
+
+  redis:
+    image: redis:6

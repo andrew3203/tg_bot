@@ -1,0 +1,42 @@
+version: "3"
+
+volumes:
+  app_local_postgres_data: {}
+  app_local_postgres_data_backups: {}
+
+services:
+  fastapi: &fastapi
+    build:
+      context: .
+      dockerfile: ./compose/local/fastapi/Dockerfile
+    image: app_local_fastapi
+    container_name: app_local_fastapi
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - .:/app:z
+    env_file:
+      - ./.envs/.local/.fastapi
+      - ./.envs/.local/.postgres
+    ports:
+      - "8000:8000"
+    command: /start
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./compose/production/postgres/Dockerfile
+    image: app_production_postgres
+    container_name: app_local_postgres
+    volumes:
+      - app_local_postgres_data:/var/lib/postgresql/data
+      - app_local_postgres_data_backups:/backups
+    env_file:
+      - ./.envs/.local/.postgres
+
+  redis:
+    image: redis:6
+    container_name: app_local_redis
+    env_file:
+      - ./.envs/.local/.fastapi
