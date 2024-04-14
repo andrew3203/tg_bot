@@ -7,18 +7,17 @@ from contextlib import contextmanager
 from pathlib import Path
 from types import SimpleNamespace
 
-from factory import random as factory_random
 from faker import Faker
 from sqlalchemy_utils import create_database, drop_database
 from yarl import URL
 
 from alembic.config import Config
 
-# reproducible randomness for faker
-factory_random.reseed_random("app 2.0")
 
 # faker as one instance of class Faker
 faker = Faker("ru_RU")
+# reproducible randomness for faker
+faker.random.seed(42)
 
 
 def __get_project_path() -> Path:
