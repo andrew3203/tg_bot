@@ -5,7 +5,7 @@ import sqlalchemy as sa
 from sqlmodel import Field, SQLModel
 
 from app.database import metadata
-from app.shema.action_type import ActionType
+from app.schema.models import ActionType
 
 
 class Action(SQLModel, table=True, metadata=metadata):
