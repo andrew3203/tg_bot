@@ -1,11 +1,10 @@
-from sqlmodel import Field
-
+from sqlmodel import Field, SQLModel
+from datetime import UTC, datetime
 from app.database import metadata
+import sqlalchemy as sa
 
-from .base import BaseSQLModel
 
-
-class User(BaseSQLModel, table=True, metadata=metadata):
+class User(SQLModel, table=True, metadata=metadata):
     """
     User:
         - `id`
@@ -26,6 +25,9 @@ class User(BaseSQLModel, table=True, metadata=metadata):
     __tablename__ = "user"
     __verbouse_name__ = "Пользователь"
 
+    id: int = Field(
+        primary_key=True, index=True, unique=True, description="Primary key"
+    )
     group_id: int = Field(primary_key=True, foreign_key="group.id")
 
     firstname: str = Field(description="Firstname")
@@ -40,4 +42,15 @@ class User(BaseSQLModel, table=True, metadata=metadata):
     cashback_amount: int | None = Field(description="Cashback amount", nullable=True)
     golden_tickets_amount: int | None = Field(
         description="Golden tickets amount", nullable=True
+    )
+
+    created_at: datetime = Field(
+        default=datetime.now(UTC),
+        sa_column=sa.Column(sa.DateTime(timezone=True), nullable=False),
+        description="Created at",
+    )
+    updated_at: datetime | None = Field(
+        default=None,
+        sa_column=sa.Column(sa.DateTime(timezone=True)),
+        description="Updated at",
     )

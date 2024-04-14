@@ -1,15 +1,14 @@
+from datetime import UTC, datetime
 from typing import Any
 
 import sqlalchemy as sa
-from sqlmodel import Field
+from sqlmodel import Field, SQLModel
 
 from app.database import metadata
 from app.shema.action_type import ActionType
 
-from .base import BaseSQLModel
 
-
-class Action(BaseSQLModel, table=True, metadata=metadata):
+class Action(SQLModel, table=True, metadata=metadata):
     """
     Action:
         - `id`
@@ -26,7 +25,9 @@ class Action(BaseSQLModel, table=True, metadata=metadata):
     __tablename__ = "action"
     __verbouse_name__ = "Действие"
 
-    action_id: int = Field(primary_key=True, index=True, foreign_key="action.id")
+    id: int = Field(
+        primary_key=True, index=True, unique=True, description="Primary key"
+    )
     message_id: int = Field(primary_key=True, index=True, foreign_key="message.id")
 
     action_type: ActionType = Field(
@@ -39,3 +40,14 @@ class Action(BaseSQLModel, table=True, metadata=metadata):
     name: str = Field(description="Action name")
     run_amount: int = Field(default=0, description="Run amount")
     succeded_amount: int = Field(default=0, description="Succeded amount")
+
+    created_at: datetime = Field(
+        default=datetime.now(UTC),
+        sa_column=sa.Column(sa.DateTime(timezone=True), nullable=False),
+        description="Created at",
+    )
+    updated_at: datetime | None = Field(
+        default=None,
+        sa_column=sa.Column(sa.DateTime(timezone=True)),
+        description="Updated at",
+    )

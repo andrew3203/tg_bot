@@ -1,11 +1,10 @@
-from sqlmodel import Field
-
+from datetime import UTC, datetime
+from sqlmodel import Field, SQLModel
+import sqlalchemy as sa
 from app.database import metadata
 
-from .base import BaseSQLModel
 
-
-class Admin(BaseSQLModel, table=True, metadata=metadata):
+class Admin(SQLModel, table=True, metadata=metadata):
     """
     User:
         - `id`
@@ -21,9 +20,23 @@ class Admin(BaseSQLModel, table=True, metadata=metadata):
     __tablename__ = "admin"
     __verbouse_name__ = "Админ"
 
+    id: int = Field(
+        primary_key=True, index=True, unique=True, description="Primary key"
+    )
     name: str = Field(description="Admin name")
     is_superuser: bool = Field(description="Is superuser", default=False)
     is_active: bool = Field(description="Is active", default=True)
 
     email: str = Field(description="Email")
-    hashed_password: str = Field(description="Hashed password")
+    hashed_password: bytes = Field(description="Hashed password")
+
+    created_at: datetime = Field(
+        default=datetime.now(UTC),
+        sa_column=sa.Column(sa.DateTime(timezone=True), nullable=False),
+        description="Created at",
+    )
+    updated_at: datetime | None = Field(
+        default=None,
+        sa_column=sa.Column(sa.DateTime(timezone=True)),
+        description="Updated at",
+    )

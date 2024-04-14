@@ -1,14 +1,12 @@
 from typing import Literal
-
+from datetime import UTC, datetime
 import sqlalchemy as sa
-from sqlmodel import Field
+from sqlmodel import Field, SQLModel
 
 from app.database import metadata
 
-from .base import BaseSQLModel
 
-
-class Group(BaseSQLModel, table=True, metadata=metadata):
+class Group(SQLModel, table=True, metadata=metadata):
     """
     Group:
         - `id`
@@ -25,6 +23,9 @@ class Group(BaseSQLModel, table=True, metadata=metadata):
     __tablename__ = "group"
     __verbouse_name__ = "Группа"
 
+    id: int = Field(
+        primary_key=True, index=True, unique=True, description="Primary key"
+    )
     name: str = Field(description="Group name")
 
     criterion_field: str = Field(description="Criterion field")
@@ -39,4 +40,15 @@ class Group(BaseSQLModel, table=True, metadata=metadata):
     criterion_rule: Literal["=", "<", "<=", ">", ">=", "!="] = Field(
         sa_column=sa.Column(sa.String),
         description="Criterion rule",
+    )
+
+    created_at: datetime = Field(
+        default=datetime.now(UTC),
+        sa_column=sa.Column(sa.DateTime(timezone=True), nullable=False),
+        description="Created at",
+    )
+    updated_at: datetime | None = Field(
+        default=None,
+        sa_column=sa.Column(sa.DateTime(timezone=True)),
+        description="Updated at",
     )

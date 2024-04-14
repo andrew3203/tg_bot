@@ -1,12 +1,10 @@
 import sqlalchemy as sa
-from sqlmodel import Field
-
+from sqlmodel import Field, SQLModel
+from datetime import UTC, datetime
 from app.database import metadata
 
-from .base import BaseSQLModel
 
-
-class Message(BaseSQLModel, table=True, metadata=metadata):
+class Message(SQLModel, table=True, metadata=metadata):
     """
     Message:
         - `id`
@@ -25,6 +23,9 @@ class Message(BaseSQLModel, table=True, metadata=metadata):
     __tablename__ = "message"
     __verbouse_name__ = "Сообщение"
 
+    id: int = Field(
+        primary_key=True, index=True, unique=True, description="Primary key"
+    )
     group_id: int = Field(primary_key=True, foreign_key="group.id")
     parents: list[int] = Field(
         sa_column=sa.Column(sa.ARRAY(sa.Integer), default=[]),
@@ -44,3 +45,14 @@ class Message(BaseSQLModel, table=True, metadata=metadata):
 
     click_amount: int = Field(default=0, description="Click amount")
     uclick_amount: int = Field(default=0, description="Unique click amount")
+
+    created_at: datetime = Field(
+        default=datetime.now(UTC),
+        sa_column=sa.Column(sa.DateTime(timezone=True), nullable=False),
+        description="Created at",
+    )
+    updated_at: datetime | None = Field(
+        default=None,
+        sa_column=sa.Column(sa.DateTime(timezone=True)),
+        description="Updated at",
+    )

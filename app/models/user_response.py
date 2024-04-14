@@ -1,15 +1,14 @@
-from sqlmodel import Field
-
+from sqlmodel import Field, SQLModel
+from datetime import UTC, datetime
 from app.database import metadata
+import sqlalchemy as sa
 
-from .base import BaseSQLModel
 
-
-class UserResponseType(BaseSQLModel, table=True, metadata=metadata):
+class UserResponseType(SQLModel, table=True, metadata=metadata):
     """
     UserResponseType:
-        - `id`
         - `name`
+        - `description`
         - `created_at`
         - `updated_at`
     """
@@ -17,10 +16,22 @@ class UserResponseType(BaseSQLModel, table=True, metadata=metadata):
     __tablename__ = "user_response_type"
     __verbouse_name__ = "Тип ответа пользователя"
 
-    name: str = Field(description="Name", unique=True)
+    name: str = Field(description="Name", primary_key=True, index=True, unique=True)
+    description: str = Field(description="Description", nullable=True)
+
+    created_at: datetime = Field(
+        default=datetime.now(UTC),
+        sa_column=sa.Column(sa.DateTime(timezone=True), nullable=False),
+        description="Created at",
+    )
+    updated_at: datetime | None = Field(
+        default=None,
+        sa_column=sa.Column(sa.DateTime(timezone=True)),
+        description="Updated at",
+    )
 
 
-class UserResponse(BaseSQLModel, table=True, metadata=metadata):
+class UserResponse(SQLModel, table=True, metadata=metadata):
     """
     UserResponse:
         - `id`
@@ -35,10 +46,22 @@ class UserResponse(BaseSQLModel, table=True, metadata=metadata):
     __tablename__ = "user_response"
     __verbouse_name__ = "Ответ пользователя"
 
-    user_id: int = Field(primary_key=True, foreign_key="user.id")
-    message_id: int = Field(primary_key=True, foreign_key="message.id")
-    response_type_id: int = Field(
-        description="Response type", foreign_key="user_response_type.id"
+    id: int = Field(primary_key=True, index=True, description="Primary key")
+    user_id: int = Field(foreign_key="user.id", description="User id")
+    message_id: int = Field(foreign_key="message.id", description="Message id")
+    response_type_name: str = Field(
+        foreign_key="user_response_type.name", description="Response type name"
     )
 
     text: str | None = Field(description="Response text", default=None, nullable=True)
+
+    created_at: datetime = Field(
+        default=datetime.now(UTC),
+        sa_column=sa.Column(sa.DateTime(timezone=True), nullable=False),
+        description="Created at",
+    )
+    updated_at: datetime | None = Field(
+        default=None,
+        sa_column=sa.Column(sa.DateTime(timezone=True)),
+        description="Updated at",
+    )

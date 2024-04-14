@@ -5,19 +5,7 @@ from sqlalchemy import engine_from_config, pool
 from sqlmodel import SQLModel
 
 from alembic import context
-from app.auth.models import AdminProfile, StudentProfile, User  # noqa: F401
-from app.common.models import Action, Currency, StudentTest, StudentTestQuestion  # noqa: F401
-from app.courses.models import Course, CourseFlow, Module, Step  # noqa: F401
-from app.portfolio.models import (  # noqa: F401
-    AssetTemplate,
-    CommentTemplate,
-    GoalTemplate,
-    StudenAsset,
-    StudentGoal,
-    StudentPortfolio,
-)
-from app.progress.models import StudentModule  # noqa: F401
-
+from app.models import *
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config

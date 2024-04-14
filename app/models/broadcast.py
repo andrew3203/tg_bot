@@ -1,15 +1,13 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Literal
 
 import sqlalchemy as sa
-from sqlmodel import Field
+from sqlmodel import Field, SQLModel
 
 from app.database import metadata
 
-from .base import BaseSQLModel
 
-
-class Broadcast(BaseSQLModel, table=True, metadata=metadata):
+class Broadcast(SQLModel, table=True, metadata=metadata):
     """
     Broadcast:
         - `id`
@@ -28,6 +26,9 @@ class Broadcast(BaseSQLModel, table=True, metadata=metadata):
     __tablename__ = "broadcast"
     __verbouse_name__ = "Рассылка"
 
+    id: int = Field(
+        primary_key=True, index=True, unique=True, description="Primary key"
+    )
     group_id: int = Field(primary_key=True, index=True, foreign_key="group.id")
     message_id: int = Field(primary_key=True, index=True, foreign_key="message.id")
 
@@ -49,4 +50,15 @@ class Broadcast(BaseSQLModel, table=True, metadata=metadata):
         sa_column=sa.Column(sa.DateTime(timezone=True)),
         default=None,
         description="End date",
+    )
+
+    created_at: datetime = Field(
+        default=datetime.now(UTC),
+        sa_column=sa.Column(sa.DateTime(timezone=True), nullable=False),
+        description="Created at",
+    )
+    updated_at: datetime | None = Field(
+        default=None,
+        sa_column=sa.Column(sa.DateTime(timezone=True)),
+        description="Updated at",
     )
