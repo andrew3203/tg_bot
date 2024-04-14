@@ -6,7 +6,7 @@ from pydantic import ValidationError
 
 from app.schema.exceptions import ExeptionData
 from app.schema.auth.token_model import TokeModel
-from .auth import auth_service
+from .auth_jwt import auth_jwt_service
 
 
 # Определение схемы авторизации
@@ -31,9 +31,7 @@ api_header_scheme = KFPAPIKeyHeader(name="token")
 
 async def get_current_user(token: Annotated[str, Depends(api_header_scheme)]):
     try:
-        jwt = auth_service.decode_jwt(
-            token=token, public_pem=auth_service.get_public_pem
-        )
+        jwt = auth_jwt_service.decode_jwt(token=token)
     except Exception as why:
         model = ExeptionData(
             code=status.HTTP_401_UNAUTHORIZED,

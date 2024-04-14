@@ -1,90 +1,57 @@
-from datetime import UTC, datetime, timedelta
-from functools import cached_property
-from typing import NamedTuple
+from datetime import timedelta
+from app.models import Admin
+from sqlmodel.ext.asyncio.session import AsyncSession
+from cryptography.fernet import Fernet
 
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric import rsa
-from jwt import JWT, AbstractJWKBase, jwk_from_pem
-from jwt.utils import get_int_from_datetime
-
-
-class PrivatePublickPem(NamedTuple):
-    private_pem: AbstractJWKBase
-    public_pem: AbstractJWKBase
+from app.schema.auth import AdminLoginModel
+from .auth_jwt import auth_jwt_service
+from sqlmodel import select
+from app.utils.exceptions import AccessExeption, DataExeption
 
 
-class AuthJWTCertService:
+class AuthService:
     def __init__(self) -> None:
-        self._jwt = JWT()
-        self.pems: PrivatePublickPem
+        self.exp_delta = timedelta(days=1)
+        self.password_hasher = self.__load_password_hasher()
 
-    @cached_property
-    def get_public_pem(self) -> AbstractJWKBase:
-        with open("public_key.pem", "rb") as f:
-            pem = f.read()
-            return jwk_from_pem(pem)
+    def __load_password_hasher(self) -> bytes:
+        with open("password_hasher.key", "rb") as f:
+            return f.read()
 
-    def generate_pems(self) -> PrivatePublickPem:
-        """
-        generate private and publick pem for jwt
-        """
-        # Генерация приватного ключа
-        private_key = rsa.generate_private_key(
-            public_exponent=65537, key_size=2048, backend=default_backend()
+    async def _create_token(self, admin: Admin) -> str:
+        return auth_jwt_service.encode_jwt(
+            user_id=admin.id,
+            role="admin",
+            exp_delta=timedelta(days=1),
         )
 
-        # Получение публичного ключа
-        public_key = private_key.public_key()
+    async def _find_admin(self, email: str, session: AsyncSession) -> Admin | None:
+        result = await session.exec(select(Admin).where(Admin.email == email))
+        return result.one_or_none()
 
-        private_pem = (
-            private_key.private_bytes(  # Сериализация и сохранение приватного ключа
-                encoding=serialization.Encoding.PEM,
-                format=serialization.PrivateFormat.TraditionalOpenSSL,
-                encryption_algorithm=serialization.NoEncryption(),
-            )
-        )
+    async def _hash_password(self, plain_password: str) -> bytes:
+        return Fernet(self.password_hasher).encrypt(plain_password.encode())
 
-        public_pem = (
-            public_key.public_bytes(  # Сериализация и сохранение публичного ключа
-                encoding=serialization.Encoding.PEM,
-                format=serialization.PublicFormat.SubjectPublicKeyInfo,
-            )
-        )
+    async def verify_password(self, plain_password: str, admin: Admin) -> bool:
+        origin_hash_password = self._hash_password(plain_password=plain_password)
+        return origin_hash_password == admin.hashed_password
 
-        pems = PrivatePublickPem(
-            private_pem=jwk_from_pem(private_pem), public_pem=jwk_from_pem(public_pem)
-        )
-        self.pems = pems
+    async def login(self, data: AdminLoginModel, session: AsyncSession) -> str:
+        admin = await self._find_admin(email=data.email, session=session)
+        if admin is None:
+            raise AccessExeption(msg="Пользователь не найден")
+        if not await self.verify_password(data.password, admin):
+            raise AccessExeption(msg="Неверный пароль")
+        return await self._create_token(admin=admin)
 
-        with open("public_key.pem", "wb") as f:
-            f.write(public_pem)
-
-        return self.pems
-
-    def encode_jwt(
-        self,
-        user_id: int,
-        role: str,
-        private_pem: AbstractJWKBase,
-        exp_delta: timedelta,
-    ) -> str:
-        """
-        encode jwt
-        """
-        payload = {
-            "iat": get_int_from_datetime(datetime.now(UTC)),
-            "exp": get_int_from_datetime(datetime.now(UTC) + exp_delta),
-            "sub": "web",
-            "lang": "RU",
-            "u": user_id,
-            "r": role,
-        }
-
-        return self._jwt.encode(payload=payload, key=private_pem, alg="RS256")
-
-    def decode_jwt(self, token: str, public_pem: AbstractJWKBase) -> dict:
-        return self._jwt.decode(message=token, key=public_pem, algorithms={"RS256"})
+    async def signup(self, data: AdminLoginModel, session: AsyncSession) -> str:
+        hashed_password = await self._hash_password(plain_password=data.password)
+        admin = Admin(email=data.email, hashed_password=hashed_password)
+        if await self._find_admin(email=data.email, session=session) is not None:
+            raise DataExeption(msg="Пользователь уже существует")
+        session.add(admin)
+        await session.commit()
+        return await self._create_token(admin=admin)
 
 
-auth_service = AuthJWTCertService()
+auth_service = AuthService()

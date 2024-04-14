@@ -281,7 +281,7 @@ dump.rdb
 !.envs/.local/
 
 # test publick pem
-public_key.pem
-
+*.pem
+*.key
 .envs/
 .vscode/

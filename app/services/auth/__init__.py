@@ -1,3 +1,4 @@
 # Flake8: noqa
-from .auth import AuthJWTCertService, auth_service
+from .auth_jwt import AuthJWTCertService, auth_jwt_service
 from .depends import get_current_user
+from .auth import auth_service, AuthService
