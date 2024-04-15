@@ -9,6 +9,7 @@ from app.schema.exceptions import ExeptionData
 from fastapi.responses import ORJSONResponse
 from starlette.middleware.cors import CORSMiddleware
 from app.routers.auth import router as auth_router
+from app.routers.group import router as group_router
 from config.settings import app_configs, settings
 
 from .json import json
@@ -55,3 +56,4 @@ async def healthcheck() -> dict[str, bool]:
 
 
 app.include_router(auth_router)
+app.include_router(group_router)

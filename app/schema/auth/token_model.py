@@ -7,11 +7,11 @@ from ..base_model import BaseModel
 class TokeModel(BaseModel):
     id: int = Field(
         description="User ID",
-        validation_alias=AliasChoices("u, id"),
+        validation_alias=AliasChoices("u", "id"),
     )
     role: Literal["admin", "user"] = Field(
         description="User role",
-        validation_alias=AliasChoices("r, role"),
+        validation_alias=AliasChoices("r", "role"),
     )
 
     @property
