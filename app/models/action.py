@@ -8,26 +8,17 @@ from app.database import metadata
 from app.schema.models import ActionType
 
 
-class Action(SQLModel, table=True, metadata=metadata):
+class ActionCreate(SQLModel, table=False, metadata=None):
     """
     Action:
-        - `id`
-        - `message_id`
-        - `action_type`
-        - `params`
-        - `name`
-        - `run_amount`
-        - `succeded_amount`
-        - `created_at`
-        - `updated_at`
+        - message_id
+        - action_type
+        - params
+        - name
+        - run_amount
+        - succeded_amount
     """
 
-    __tablename__ = "action"
-    __verbouse_name__ = "Действие"
-
-    id: int = Field(
-        primary_key=True, index=True, unique=True, description="Primary key"
-    )
     message_id: int = Field(primary_key=True, index=True, foreign_key="message.id")
 
     action_type: ActionType = Field(
@@ -41,6 +32,27 @@ class Action(SQLModel, table=True, metadata=metadata):
     run_amount: int = Field(default=0, description="Run amount")
     succeded_amount: int = Field(default=0, description="Succeded amount")
 
+
+class Action(ActionCreate, table=True, metadata=metadata):
+    """
+    Action:
+        - id
+        - message_id
+        - action_type
+        - params
+        - name
+        - run_amount
+        - succeded_amount
+        - created_at
+        - updated_at
+    """
+
+    __tablename__ = "action"
+    __verbouse_name__ = "Действие"
+
+    id: int = Field(
+        primary_key=True, index=True, unique=True, description="Primary key"
+    )
     created_at: datetime = Field(
         default=datetime.now(UTC),
         sa_column=sa.Column(sa.DateTime(timezone=True), nullable=False),

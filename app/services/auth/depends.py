@@ -11,7 +11,7 @@ from .auth_jwt import auth_jwt_service
 
 
 # Определение схемы авторизации
-class KFPAPIKeyHeader(APIKeyHeader):
+class BotAPIKeyHeader(APIKeyHeader):
     async def __call__(self, request: Request) -> str | None:
         api_key = request.headers.get(self.model.name)
         if not api_key:
@@ -27,7 +27,7 @@ class KFPAPIKeyHeader(APIKeyHeader):
         return api_key
 
 
-api_header_scheme = KFPAPIKeyHeader(name="token")
+api_header_scheme = BotAPIKeyHeader(name="token")
 
 
 async def get_current_user(token: Annotated[str, Depends(api_header_scheme)]):

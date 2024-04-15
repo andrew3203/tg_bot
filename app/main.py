@@ -10,6 +10,8 @@ from fastapi.responses import ORJSONResponse
 from starlette.middleware.cors import CORSMiddleware
 from app.routers.auth import router as auth_router
 from app.routers.group import router as group_router
+from app.routers.message import router as message_router
+from app.routers.user import router as user_router
 from config.settings import app_configs, settings
 
 from .json import json
@@ -57,3 +59,5 @@ async def healthcheck() -> dict[str, bool]:
 
 app.include_router(auth_router)
 app.include_router(group_router)
+app.include_router(message_router)
+app.include_router(user_router)

@@ -4,37 +4,26 @@ from app.database import metadata
 import sqlalchemy as sa
 
 
-class User(SQLModel, table=True, metadata=metadata):
+class UserCreate(SQLModel, table=False, metadata=None):
     """
-    User:
-        - `id`
-        - `group_id`
-        - `firstname`
-        - `lastname`
-        - `portobello_id`
-        - `company`
-        - `rating`
-        - `turnover`
-        - `orders_amount`
-        - `cashback_amount`
-        - `golden_tickets_amount`
-        - `created_at`
-        - `updated_at`
+    User Create:
+
+        - group_id
+        - firstname
+        - lastname
+        - portobello_id
+        - company
+        - rating
+        - turnover
+        - orders_amount
+        - cashback_amount
+        - golden_tickets_amount
     """
 
-    __tablename__ = "user"
-    __verbouse_name__ = "Пользователь"
-
-    id: int = Field(
-        primary_key=True, index=True, unique=True, description="Primary key"
-    )
     group_id: int = Field(primary_key=True, foreign_key="group.id")
-
     firstname: str = Field(description="Firstname")
     lastname: str | None = Field(description="Lastname", nullable=True)
-
     portobello_id: str = Field(description="Portobello id")
-
     company: str | None = Field(description="Company", nullable=True)
     rating: int | None = Field(description="Rating", nullable=True)
     turnover: int | None = Field(description="Turnover", nullable=True)
@@ -44,6 +33,32 @@ class User(SQLModel, table=True, metadata=metadata):
         description="Golden tickets amount", nullable=True
     )
 
+
+class User(UserCreate, table=True, metadata=metadata):
+    """
+    User:
+
+        - id
+        - group_id
+        - firstname
+        - lastname
+        - portobello_id
+        - company
+        - rating
+        - turnover
+        - orders_amount
+        - cashback_amount
+        - golden_tickets_amount
+        - created_at
+        - updated_at
+    """
+
+    __tablename__ = "user"
+    __verbouse_name__ = "Пользователь"
+
+    id: int = Field(
+        primary_key=True, index=True, unique=True, description="Primary key"
+    )
     created_at: datetime = Field(
         default=datetime.now(UTC),
         sa_column=sa.Column(sa.DateTime(timezone=True), nullable=False),

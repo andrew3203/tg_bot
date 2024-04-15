@@ -8,5 +8,5 @@ from .paginations import (
     PaginatedMessage,
     PaginatedUserResponse,
     PaginatedUserResponseType,
-    PaginatedUsers,
+    PaginatedUser,
 )

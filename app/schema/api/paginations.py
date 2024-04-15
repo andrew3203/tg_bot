@@ -12,7 +12,7 @@ from app.models import (
 )
 
 
-class PaginatedUsers(PaginatedDataBase):
+class PaginatedUser(PaginatedDataBase):
     data: Sequence[User]
 
 

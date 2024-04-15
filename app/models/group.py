@@ -1,9 +1,9 @@
 from typing import Literal
+from datetime import UTC, datetime
 import sqlalchemy as sa
 from sqlmodel import Field, SQLModel
 
 from app.database import metadata
-from .base import BaseSQLModel
 
 
 class GroupCreate(SQLModel, table=False):
@@ -35,7 +35,7 @@ class GroupCreate(SQLModel, table=False):
     )
 
 
-class Group(BaseSQLModel, GroupCreate, table=True, metadata=metadata):
+class Group(GroupCreate, table=True, metadata=metadata):
     """
     Group:
 
@@ -52,3 +52,21 @@ class Group(BaseSQLModel, GroupCreate, table=True, metadata=metadata):
 
     __tablename__ = "group"
     __verbouse_name__ = "Группа"
+
+    id: int | None = Field(
+        primary_key=True,
+        index=True,
+        unique=True,
+        default=None,
+        description="Primary key",
+    )
+    created_at: datetime = Field(
+        default=datetime.now(UTC),
+        sa_column=sa.Column(sa.DateTime(timezone=True), nullable=False),
+        description="Created at",
+    )
+    updated_at: datetime | None = Field(
+        default=None,
+        sa_column=sa.Column(sa.DateTime(timezone=True)),
+        description="Updated at",
+    )

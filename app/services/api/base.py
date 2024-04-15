@@ -3,12 +3,11 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from app.schema.auth import TokeModel
 from sqlmodel import select
 from app.utils.exceptions import NotFoundException
-from app.models.base import BaseSQLModel
 from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import SelectOfScalar
 from .pagination import PaginationService, PaginatedData
 
-Model = TypeVar("Model", bound=BaseSQLModel)
+Model = TypeVar("Model", bound=SQLModel)
 T = TypeVar("T", bound=SQLModel)
 
 
@@ -30,7 +29,7 @@ class BaseModelService:
         return created
 
     async def _get(self, model: type[Model], model_id: int) -> Model:
-        result = await self.session.exec(select(model).where(model.id == model_id))
+        result = await self.session.exec(select(model).where(model.id == model_id))  # type: ignore
         _model = result.one_or_none()
         if _model is None:
             raise NotFoundException(msg="Обьект не найден")
