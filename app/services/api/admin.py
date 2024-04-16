@@ -63,7 +63,7 @@ class AdminService(BaseModelService):
         if _admin.hashed_password != hashed_password:
             data.hashed_password = hashed_password
 
-        await self.__set_params(model=_admin, data=data)
+        await self._set_params(model=_admin, data=data)
         self.session.add(_admin)
         await self.session.commit()
         return _admin

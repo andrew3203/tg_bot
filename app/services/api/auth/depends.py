@@ -1,4 +1,3 @@
-import logging
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, Request, status
@@ -42,7 +41,6 @@ async def get_current_user(token: Annotated[str, Depends(api_header_scheme)]):
         raise HTTPException(status_code=model.code, detail=model.model_dump())
 
     try:
-        logging.error(f"jwt: {jwt}")
         user = TokeModel.model_validation(jwt)
     except ValidationError as why:
         model = ExeptionData(

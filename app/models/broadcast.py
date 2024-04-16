@@ -16,8 +16,8 @@ class BroadcastCreate(SQLModel, table=False, metadata=None):
         - start_date
     """
 
-    group_id: int = Field(primary_key=True, index=True, foreign_key="group.id")
-    message_id: int = Field(primary_key=True, index=True, foreign_key="message.id")
+    group_id: int = Field(index=True, foreign_key="group.id")
+    message_id: int = Field(index=True, foreign_key="message.id")
     name: str = Field(description="Broadcast name")
     start_date: datetime | None = Field(
         sa_column=sa.Column(sa.DateTime(timezone=True)),
@@ -45,11 +45,15 @@ class Broadcast(BroadcastCreate, table=True, metadata=metadata):
     __tablename__ = "broadcast"
     __verbouse_name__ = "Рассылка"
 
-    id: int = Field(
-        primary_key=True, index=True, unique=True, description="Primary key"
+    id: int | None = Field(
+        primary_key=True,
+        index=True,
+        unique=True,
+        default=None,
+        description="Primary key",
     )
     planned_quantity: int = Field(description="Planned quantity")
-    succeded_quantity: int = Field(description="Succeded quantity")
+    succeded_quantity: int = Field(description="Succeded quantity", default=0)
     status: Literal["planned", "running", "succeded", "failed", "cancelled"] = Field(
         sa_column=sa.Column(sa.String),
         default="planned",

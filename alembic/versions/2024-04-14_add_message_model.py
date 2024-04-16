@@ -35,7 +35,7 @@ def upgrade() -> None:
             ["group_id"],
             ["group.id"],
         ),
-        sa.PrimaryKeyConstraint("id", "group_id"),
+        sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(op.f("ix_message_id"), "message", ["id"], unique=True)
 

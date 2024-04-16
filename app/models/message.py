@@ -16,7 +16,7 @@ class MessageCreate(SQLModel, table=False, metadata=None):
         - media
     """
 
-    group_id: int = Field(primary_key=True, foreign_key="group.id")
+    group_id: int = Field(foreign_key="group.id")
     parents: list[int] = Field(
         sa_column=sa.Column(sa.ARRAY(sa.Integer), default=[]),
         description="Message parents",

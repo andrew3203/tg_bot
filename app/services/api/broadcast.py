@@ -41,9 +41,9 @@ class BroadcastService(BaseModelService):
         elif data.start_date < datetime.now(UTC):
             raise DataExeption(msg="Нельзя создать рассылку в прошлом")
 
-        _broadcast = Broadcast.model_validate(data)
+        planned_quantity = await self._count_group_users(group=group)
+        _broadcast = Broadcast(**data.model_dump(), planned_quantity=planned_quantity)
         _broadcast.status = status
-        _broadcast.planned_quantity = await self._count_group_users(group=group)
         self.session.add(_broadcast)
         await self.session.commit()
         # TODO: run broadcast
@@ -75,7 +75,7 @@ class BroadcastService(BaseModelService):
         _broadcast.succeded_quantity = 0
         _broadcast.end_date = None
 
-        await self.__set_params(model=_broadcast, data=data)
+        await self._set_params(model=_broadcast, data=data)
         self.session.add(_broadcast)
         await self.session.commit()
         # TODO: run broadcast

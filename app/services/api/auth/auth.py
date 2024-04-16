@@ -24,7 +24,7 @@ class AuthService:
 
     async def _create_token(self, admin: Admin) -> str:
         return auth_jwt_service.encode_jwt(
-            user_id=admin.id,
+            user_id=admin.id,  # type: ignore
             role="admin",
             exp_delta=timedelta(days=1),
         )

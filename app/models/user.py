@@ -20,7 +20,7 @@ class UserCreate(SQLModel, table=False, metadata=None):
         - golden_tickets_amount
     """
 
-    group_id: int = Field(primary_key=True, foreign_key="group.id")
+    group_id: int = Field(foreign_key="group.id")
     firstname: str = Field(description="Firstname")
     lastname: str | None = Field(description="Lastname", nullable=True)
     portobello_id: str = Field(description="Portobello id")
@@ -56,8 +56,12 @@ class User(UserCreate, table=True, metadata=metadata):
     __tablename__ = "user"
     __verbouse_name__ = "Пользователь"
 
-    id: int = Field(
-        primary_key=True, index=True, unique=True, description="Primary key"
+    id: int | None = Field(
+        primary_key=True,
+        index=True,
+        unique=True,
+        default=None,
+        description="Primary key",
     )
     created_at: datetime = Field(
         default=datetime.now(UTC),

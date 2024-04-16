@@ -37,7 +37,7 @@ def upgrade() -> None:
             ["group_id"],
             ["group.id"],
         ),
-        sa.PrimaryKeyConstraint("id", "group_id"),
+        sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(op.f("ix_user_id"), "user", ["id"], unique=True)
     # ### end Alembic commands ###

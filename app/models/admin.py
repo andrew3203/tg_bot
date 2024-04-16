@@ -37,8 +37,12 @@ class Admin(AdminCreate, table=True, metadata=metadata):
     __tablename__ = "admin"
     __verbouse_name__ = "Админ"
 
-    id: int = Field(
-        primary_key=True, index=True, unique=True, description="Primary key"
+    id: int | None = Field(
+        primary_key=True,
+        index=True,
+        unique=True,
+        default=None,
+        description="Primary key",
     )
     created_at: datetime = Field(
         default=datetime.now(UTC),

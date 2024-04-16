@@ -3,7 +3,7 @@ from app.models import UserResponseType, UserResponseTypeCreate, UserResponse
 from app.schema.base_model import KeyValueModel
 from app.services.api.pagination import PaginationService
 from app.schema.api import PaginatedUserResponseType
-from app.utils.exceptions import DataExeption
+from app.utils.exceptions import DataExeption, NotFoundException
 from .base import BaseModelService
 
 
@@ -19,8 +19,16 @@ class UserResponseTypeService(BaseModelService):
         await self._validate_name(data=data)
         return await self._create(data=data, model=UserResponseType)
 
-    async def get(self, user_response_type_id: int) -> UserResponseType:
-        return await self._get(model=UserResponseType, model_id=user_response_type_id)
+    async def get(self, user_response_type_name: str) -> UserResponseType:
+        result = await self.session.exec(
+            select(UserResponseType).where(
+                UserResponseType.name == user_response_type_name
+            )
+        )
+        user_resonse_type = result.one_or_none()
+        if user_resonse_type is None:
+            raise NotFoundException(msg="Обьект не найден")
+        return user_resonse_type
 
     async def update(
         self, data: UserResponseTypeCreate, user_response_type_id: int
@@ -43,9 +51,9 @@ class UserResponseTypeService(BaseModelService):
                 msg="Вы не можете удалить этот обьект, есть связанные обьекты"
             )
 
-    async def delete(self, user_response_type_id: int) -> KeyValueModel:
-        user_resonse_type = await self._get(
-            model=UserResponseType, model_id=user_response_type_id
+    async def delete(self, user_response_type_name: str) -> KeyValueModel:
+        user_resonse_type = await self.get(
+            user_response_type_name=user_response_type_name
         )
         await self._chech_user_response_exsists(user_resonse_type=user_resonse_type)
         await self.session.delete(user_resonse_type)

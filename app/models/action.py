@@ -17,7 +17,7 @@ class ActionCreate(SQLModel, table=False, metadata=None):
         - name
     """
 
-    message_id: int = Field(primary_key=True, index=True, foreign_key="message.id")
+    message_id: int = Field(index=True, foreign_key="message.id")
 
     action_type: ActionType = Field(
         sa_column=sa.Column(sa.String), description="Action type"
@@ -45,8 +45,12 @@ class Action(ActionCreate, table=True, metadata=metadata):
     __tablename__ = "action"
     __verbouse_name__ = "Действие"
 
-    id: int = Field(
-        primary_key=True, index=True, unique=True, description="Primary key"
+    id: int | None = Field(
+        primary_key=True,
+        index=True,
+        unique=True,
+        default=None,
+        description="Primary key",
     )
     run_amount: int = Field(default=0, description="Run amount")
     succeded_amount: int = Field(default=0, description="Succeded amount")

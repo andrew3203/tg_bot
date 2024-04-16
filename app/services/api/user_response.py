@@ -1,4 +1,4 @@
-from sqlmodel import select, func
+from sqlmodel import select
 from app.models import UserResponse, UserResponseCreate, Message, User, UserResponseType
 from app.schema.base_model import KeyValueModel
 from app.services.api.pagination import PaginationService
@@ -22,9 +22,11 @@ class UserResponseService(BaseModelService):
 
     async def _validate_name(self, data: UserResponseCreate) -> None:
         result = await self.session.exec(
-            select(func.count()).where(UserResponseType.name == data.response_type_name)
+            select(UserResponseType).where(
+                UserResponseType.name == data.response_type_name
+            )
         )
-        if result.one() != 0:
+        if result.one_or_none() is None:
             raise DataExeption(msg="Тип отклика не существует")
 
     async def create(self, data: UserResponseCreate) -> UserResponse:

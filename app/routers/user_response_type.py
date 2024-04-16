@@ -21,10 +21,10 @@ router = APIRouter(prefix="/user_response_type", tags=["user_response_type"])
 async def get_user_response_type(
     token_model: Annotated[TokeModel, Depends(get_current_user)],
     session: AsyncSession = Depends(get_async_session),
-    user_response_type_id: int = Query(description="UserResponseType ID", gt=0),
+    user_response_type_name: str = Query(description="UserResponseType name"),
 ) -> UserResponseType:
     service = UserResponseTypeService(token_model=token_model, session=session)
-    return await service.get(user_response_type_id=user_response_type_id)
+    return await service.get(user_response_type_name=user_response_type_name)
 
 
 @router.post(
@@ -78,7 +78,7 @@ async def get_user_response_type_list(
 async def delete_user_response_type(
     token_model: Annotated[TokeModel, Depends(get_current_user)],
     session: AsyncSession = Depends(get_async_session),
-    user_response_type_id: int = Query(description="UserResponseType ID", gt=0),
+    user_response_type_name: str = Query(description="UserResponseType name"),
 ) -> KeyValueModel:
     service = UserResponseTypeService(token_model=token_model, session=session)
-    return await service.delete(user_response_type_id=user_response_type_id)
+    return await service.delete(user_response_type_name=user_response_type_name)

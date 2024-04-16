@@ -17,14 +17,14 @@ class BaseModelService:
         self.token_model = token_model
         self.session = session
 
-    async def __set_params(self, model: Model, data: T) -> Model:
+    async def _set_params(self, model: Model, data: T) -> Model:
         for field in model.model_fields:
             if hasattr(data, field):
                 setattr(model, field, getattr(data, field))
         return model
 
     async def _create(self, data: T, model: type[Model]) -> Model:
-        created = model.model_validate(data)
+        created = model(**data.model_dump())
         self.session.add(created)
         await self.session.commit()
         return created
@@ -38,7 +38,7 @@ class BaseModelService:
 
     async def _update(self, model: type[Model], model_id: int, data: T) -> Model:
         _model = await self._get(model=model, model_id=model_id)
-        await self.__set_params(model=_model, data=data)
+        await self._set_params(model=_model, data=data)
         self.session.add(_model)
         await self.session.commit()
         return _model

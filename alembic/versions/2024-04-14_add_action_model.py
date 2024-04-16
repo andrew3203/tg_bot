@@ -33,7 +33,7 @@ def upgrade() -> None:
             ["message_id"],
             ["message.id"],
         ),
-        sa.PrimaryKeyConstraint("id", "message_id"),
+        sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(op.f("ix_action_id"), "action", ["id"], unique=True)
     op.create_index(
