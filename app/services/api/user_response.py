@@ -1,5 +1,6 @@
 from sqlmodel import select, func
 from app.models import UserResponse, UserResponseCreate, Message, User, UserResponseType
+from app.schema.base_model import KeyValueModel
 from app.services.api.pagination import PaginationService
 from app.schema.api import PaginatedUserResponse
 from app.utils.exceptions import DataExeption, NotFoundException
@@ -44,6 +45,9 @@ class UserResponseService(BaseModelService):
         return await self._update(
             model=UserResponse, model_id=user_response_id, data=data
         )
+
+    async def delete(self, user_response_id: int) -> KeyValueModel:
+        return await self._delete(model=UserResponse, model_id=user_response_id)
 
     async def list(
         self, service: PaginationService, page_number: int = 1, page_limit: int = 10

@@ -1,5 +1,6 @@
 from sqlmodel import select, func
-from app.models import UserResponseType, UserResponseTypeCreate
+from app.models import UserResponseType, UserResponseTypeCreate, UserResponse
+from app.schema.base_model import KeyValueModel
 from app.services.api.pagination import PaginationService
 from app.schema.api import PaginatedUserResponseType
 from app.utils.exceptions import DataExeption
@@ -28,6 +29,28 @@ class UserResponseTypeService(BaseModelService):
         return await self._update(
             model=UserResponseType, model_id=user_response_type_id, data=data
         )
+
+    async def _chech_user_response_exsists(
+        self, user_resonse_type: UserResponseType
+    ) -> None:
+        result = await self.session.exec(
+            select(UserResponse).where(
+                UserResponse.response_type_name == user_resonse_type.name
+            )
+        )
+        if result.one_or_none() is not None:
+            raise DataExeption(
+                msg="Вы не можете удалить этот обьект, есть связанные обьекты"
+            )
+
+    async def delete(self, user_response_type_id: int) -> KeyValueModel:
+        user_resonse_type = await self._get(
+            model=UserResponseType, model_id=user_response_type_id
+        )
+        await self._chech_user_response_exsists(user_resonse_type=user_resonse_type)
+        await self.session.delete(user_resonse_type)
+        await self.session.commit()
+        return KeyValueModel(key="OK", value="Обьект удален")
 
     async def list(
         self, service: PaginationService, page_number: int = 1, page_limit: int = 10

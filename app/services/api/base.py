@@ -1,6 +1,7 @@
 from typing import TypeVar
 from sqlmodel.ext.asyncio.session import AsyncSession
 from app.schema.auth import TokeModel
+from app.schema.base_model import KeyValueModel
 from sqlmodel import select
 from app.utils.exceptions import NotFoundException
 from sqlmodel import SQLModel
@@ -41,6 +42,12 @@ class BaseModelService:
         self.session.add(_model)
         await self.session.commit()
         return _model
+
+    async def _delete(self, model: type[Model], model_id: int) -> KeyValueModel:
+        _model = await self._get(model=model, model_id=model_id)
+        await self.session.delete(_model)
+        await self.session.commit()
+        return KeyValueModel(key="OK", value="Обьект удален")
 
     async def _list(
         self,

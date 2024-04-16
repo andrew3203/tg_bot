@@ -2,6 +2,7 @@ from datetime import UTC, datetime
 from typing import Literal
 from sqlmodel import select, func
 from app.models import Broadcast, BroadcastCreate, Group, Message, User
+from app.schema.base_model import KeyValueModel
 from app.services.api.pagination import PaginationService
 from app.schema.api import PaginatedBroadcast
 from app.utils.exceptions import NotFoundException, DataExeption
@@ -79,6 +80,16 @@ class BroadcastService(BaseModelService):
         await self.session.commit()
         # TODO: run broadcast
         return _broadcast
+
+    async def delete(self, broadcast_id: int) -> KeyValueModel:
+        _broadcast = await self._get(model=Broadcast, model_id=broadcast_id)
+        if _broadcast.status not in ("failed", "cancelled", "succeded"):
+            raise DataExeption(
+                msg="Рассылка не может быть удалена (только при failed, cancelled, succeded)"
+            )
+        await self.session.delete(_broadcast)
+        await self.session.commit()
+        return KeyValueModel(key="OK", value="Обьект удален")
 
     async def cancel_broadcast(self, broadcast_id: int) -> Broadcast:
         _broadcast = await self._get(model=Broadcast, model_id=broadcast_id)

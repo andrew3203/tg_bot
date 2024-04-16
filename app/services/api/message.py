@@ -1,5 +1,6 @@
 from sqlmodel import select, func, col
 from app.models import Message, MessageCreate, Group
+from app.schema.base_model import KeyValueModel
 from app.services.api import PaginationService
 from app.schema.api import PaginatedMessage
 from app.utils.exceptions import NotFoundException
@@ -33,6 +34,9 @@ class MessageService(BaseModelService):
         await self._validate_group(data=data)
         await self._validate_messages(data=data)
         return await self._update(model=Message, model_id=message_id, data=data)
+
+    async def delete(self, message_id: int) -> KeyValueModel:
+        return await self._delete(model=Message, model_id=message_id)
 
     async def list(
         self, service: PaginationService, page_number: int = 1, page_limit: int = 10

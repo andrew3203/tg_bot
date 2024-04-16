@@ -3,6 +3,7 @@ from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 from app.models import Admin, AdminCreate
 from app.schema.auth.token_model import TokeModel
+from app.schema.base_model import KeyValueModel
 from app.services.api.pagination import PaginationService
 from app.schema.api import PaginatedAdmin
 from app.utils.exceptions import AccessExeption
@@ -66,6 +67,10 @@ class AdminService(BaseModelService):
         self.session.add(_admin)
         await self.session.commit()
         return _admin
+
+    async def delete(self, admin_id: int) -> KeyValueModel:
+        await self._validate_admin_access(admin_id=admin_id)
+        return await self._delete(model=Admin, model_id=admin_id)
 
     async def list(
         self, service: PaginationService, page_number: int = 1, page_limit: int = 10

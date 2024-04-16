@@ -1,5 +1,6 @@
 from sqlmodel import select
 from app.models import Action, ActionCreate, Message
+from app.schema.base_model import KeyValueModel
 from app.services.api.pagination import PaginationService
 from app.schema.api import PaginatedAction
 from app.utils.exceptions import NotFoundException
@@ -23,6 +24,9 @@ class ActionService(BaseModelService):
     async def update(self, data: ActionCreate, action_id: int) -> Action:
         await self._validate_group(data=data)
         return await self._update(model=Action, model_id=action_id, data=data)
+
+    async def delete(self, action_id: int) -> KeyValueModel:
+        return await self._delete(model=Action, model_id=action_id)
 
     async def list(
         self, service: PaginationService, page_number: int = 1, page_limit: int = 10
