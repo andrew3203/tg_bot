@@ -3,7 +3,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.database import get_async_session
 from app.schema.auth import AdminLoginModel, AdminSignupModel
-from app.services.auth import auth_service
+from app.services.api.auth import auth_service
 
 
 router = APIRouter(prefix="/auth", tags=["auth"])

@@ -7,7 +7,7 @@ from app.services.api.pagination import PaginationService
 from app.schema.api import PaginatedAdmin
 from app.utils.exceptions import AccessExeption
 from .base import BaseModelService
-from ..auth import auth_service, AuthService
+from app.services.api.auth import auth_service, AuthService
 
 
 class AdminService(BaseModelService):

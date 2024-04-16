@@ -5,7 +5,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from app.database import get_async_session
 from app.schema.api import PaginatedUserResponse
 from app.services.api import PaginationService, UserResponseService
-from app.services.auth import get_current_user
+from app.services.api.auth import get_current_user
 from app.schema.auth import TokeModel
 from app.models import UserResponse, UserResponseCreate
 
