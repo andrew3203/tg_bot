@@ -4,6 +4,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.database import get_async_session
 from app.schema.api import PaginatedBroadcast
+from app.schema.base_model import KeyValueModel
 from app.services.api import PaginationService, BroadcastService
 from app.services.api.auth import get_current_user
 from app.schema.auth import TokeModel
@@ -84,3 +85,13 @@ async def get_broadcast_list(
     return await service.list(
         page_number=page_number, page_limit=page_limit, service=pagination
     )
+
+
+@router.delete("", response_model=KeyValueModel)
+async def delete_broadcast(
+    token_model: Annotated[TokeModel, Depends(get_current_user)],
+    session: AsyncSession = Depends(get_async_session),
+    broadcast_id: int = Query(description="Broadcast ID", gt=0),
+) -> KeyValueModel:
+    service = BroadcastService(token_model=token_model, session=session)
+    return await service.delete(broadcast_id=broadcast_id)

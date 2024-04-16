@@ -4,6 +4,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.database import get_async_session
 from app.schema.api import PaginatedAdmin
+from app.schema.base_model import KeyValueModel
 from app.services.api import PaginationService, AdminService
 from app.services.api.auth import get_current_user
 from app.schema.auth import TokeModel
@@ -71,3 +72,13 @@ async def get_admin_list(
     return await service.list(
         page_number=page_number, page_limit=page_limit, service=pagination
     )
+
+
+@router.delete("", response_model=KeyValueModel)
+async def delete_admin(
+    token_model: Annotated[TokeModel, Depends(get_current_user)],
+    session: AsyncSession = Depends(get_async_session),
+    admin_id: int = Query(description="Admin ID", gt=0),
+) -> KeyValueModel:
+    service = AdminService(token_model=token_model, session=session)
+    return await service.delete(admin_id=admin_id)
