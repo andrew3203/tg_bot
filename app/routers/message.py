@@ -14,7 +14,7 @@ router = APIRouter(prefix="/message", tags=["message"])
 
 
 @router.get(
-    "/",
+    "",
     response_model=Message,
 )
 async def get_message(
@@ -27,7 +27,7 @@ async def get_message(
 
 
 @router.post(
-    "/",
+    "",
     response_model=Message,
 )
 async def create_message(
@@ -40,7 +40,7 @@ async def create_message(
 
 
 @router.put(
-    "/",
+    "",
     response_model=Message,
 )
 async def update_message(

@@ -18,18 +18,6 @@ async def login(
     data: AdminLoginModel,
     session: AsyncSession = Depends(get_async_session),
 ) -> str:
-    """
-    A function to handle the login process for the authentication service.
-
-    Parameters:
-
-        - data: AdminLoginModel: The data containing the login information.
-
-    Returns:
-
-        - str: A string indicating the result of the login process.
-
-    """
     return await auth_service.login(data=data, session=session)
 
 
@@ -42,16 +30,4 @@ async def signup(
     data: AdminSignupModel,
     session: AsyncSession = Depends(get_async_session),
 ) -> str:
-    """
-    A function to handle the signup process for the authentication service.
-
-    Parameters:
-
-        - data: AdminLoginModel: The data containing the login information.
-
-    Returns:
-
-        - str: A string indicating the result of the signup process.
-
-    """
     return await auth_service.signup(data=data, session=session)

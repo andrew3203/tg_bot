@@ -15,8 +15,6 @@ class ActionCreate(SQLModel, table=False, metadata=None):
         - action_type
         - params
         - name
-        - run_amount
-        - succeded_amount
     """
 
     message_id: int = Field(primary_key=True, index=True, foreign_key="message.id")
@@ -27,10 +25,7 @@ class ActionCreate(SQLModel, table=False, metadata=None):
     params: dict[str, Any] = Field(
         description="Action params", sa_column=sa.Column(sa.JSON)
     )
-
     name: str = Field(description="Action name")
-    run_amount: int = Field(default=0, description="Run amount")
-    succeded_amount: int = Field(default=0, description="Succeded amount")
 
 
 class Action(ActionCreate, table=True, metadata=metadata):
@@ -53,6 +48,8 @@ class Action(ActionCreate, table=True, metadata=metadata):
     id: int = Field(
         primary_key=True, index=True, unique=True, description="Primary key"
     )
+    run_amount: int = Field(default=0, description="Run amount")
+    succeded_amount: int = Field(default=0, description="Succeded amount")
     created_at: datetime = Field(
         default=datetime.now(UTC),
         sa_column=sa.Column(sa.DateTime(timezone=True), nullable=False),

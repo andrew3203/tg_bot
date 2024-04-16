@@ -47,7 +47,7 @@ class UserResponseCreate(SQLModel, table=False, metadata=None):
 
         - user_id
         - message_id
-        - response_type_id
+        - response_type_name
         - text
     """
 

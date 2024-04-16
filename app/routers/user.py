@@ -14,7 +14,7 @@ router = APIRouter(prefix="/user", tags=["user"])
 
 
 @router.get(
-    "/",
+    "",
     response_model=User,
 )
 async def get_user(
@@ -27,7 +27,7 @@ async def get_user(
 
 
 @router.post(
-    "/",
+    "",
     response_model=User,
 )
 async def create_user(
@@ -40,7 +40,7 @@ async def create_user(
 
 
 @router.put(
-    "/",
+    "",
     response_model=User,
 )
 async def update_user(

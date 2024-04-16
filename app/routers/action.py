@@ -3,61 +3,61 @@ from fastapi import APIRouter, Depends, Query, Request
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.database import get_async_session
-from app.schema.api import PaginatedGroup
-from app.services.api import PaginationService, GroupService
+from app.schema.api import PaginatedAction
+from app.services.api import PaginationService, ActionService
 from app.services.auth import get_current_user
 from app.schema.auth import TokeModel
-from app.models import Group, GroupCreate
+from app.models import Action, ActionCreate
 
 
-router = APIRouter(prefix="/group", tags=["group"])
+router = APIRouter(prefix="/action", tags=["action"])
 
 
 @router.get(
     "",
-    response_model=Group,
+    response_model=Action,
 )
-async def get_group(
+async def get_action(
     token_model: Annotated[TokeModel, Depends(get_current_user)],
     session: AsyncSession = Depends(get_async_session),
-    group_id: int = Query(description="Group ID", gt=0),
-) -> Group:
-    service = GroupService(token_model=token_model, session=session)
-    return await service.get(group_id=group_id)
+    action_id: int = Query(description="Action ID", gt=0),
+) -> Action:
+    service = ActionService(token_model=token_model, session=session)
+    return await service.get(action_id=action_id)
 
 
 @router.post(
     "",
-    response_model=Group,
+    response_model=Action,
 )
-async def create_group(
-    data: GroupCreate,
+async def create_action(
+    data: ActionCreate,
     token_model: Annotated[TokeModel, Depends(get_current_user)],
     session: AsyncSession = Depends(get_async_session),
-) -> Group:
-    service = GroupService(token_model=token_model, session=session)
+) -> Action:
+    service = ActionService(token_model=token_model, session=session)
     return await service.create(data=data)
 
 
 @router.put(
     "",
-    response_model=Group,
+    response_model=Action,
 )
-async def update_group(
-    data: GroupCreate,
+async def update_action(
+    data: ActionCreate,
     token_model: Annotated[TokeModel, Depends(get_current_user)],
     session: AsyncSession = Depends(get_async_session),
-    group_id: int = Query(description="Group ID", gt=0),
-) -> Group:
-    service = GroupService(token_model=token_model, session=session)
-    return await service.update(data=data, group_id=group_id)
+    action_id: int = Query(description="Action ID", gt=0),
+) -> Action:
+    service = ActionService(token_model=token_model, session=session)
+    return await service.update(data=data, action_id=action_id)
 
 
 @router.get(
     "/list",
-    response_model=PaginatedGroup,
+    response_model=PaginatedAction,
 )
-async def get_group_list(
+async def get_action_list(
     request: Request,
     token_model: Annotated[TokeModel, Depends(get_current_user)],
     session: AsyncSession = Depends(get_async_session),
@@ -65,8 +65,8 @@ async def get_group_list(
     page_limit: int = Query(
         description="Кол-во обьектов на странице", default=10, ge=5
     ),
-) -> PaginatedGroup:
-    service = GroupService(token_model=token_model, session=session)
+) -> PaginatedAction:
+    service = ActionService(token_model=token_model, session=session)
     pagination = PaginationService(request_url=request.url)
     return await service.list(
         page_number=page_number, page_limit=page_limit, service=pagination

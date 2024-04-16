@@ -12,6 +12,11 @@ from app.routers.auth import router as auth_router
 from app.routers.group import router as group_router
 from app.routers.message import router as message_router
 from app.routers.user import router as user_router
+from app.routers.action import router as action_router
+from app.routers.admin import router as admin_router
+from app.routers.broadcast import router as broadcast_router
+from app.routers.user_response_type import router as user_response_type_router
+from app.routers.user_response import router as user_response_router
 from config.settings import app_configs, settings
 
 from .json import json
@@ -61,3 +66,8 @@ app.include_router(auth_router)
 app.include_router(group_router)
 app.include_router(message_router)
 app.include_router(user_router)
+app.include_router(action_router)
+app.include_router(admin_router)
+app.include_router(broadcast_router)
+app.include_router(user_response_type_router)
+app.include_router(user_response_router)
