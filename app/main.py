@@ -1,5 +1,6 @@
 """Main project file"""
-
+from contextlib import asynccontextmanager
+from collections.abc import AsyncGenerator
 import logging
 import logging.config
 
@@ -18,12 +19,21 @@ from app.routers.broadcast import router as broadcast_router
 from app.routers.user_response_type import router as user_response_type_router
 from app.routers.user_response import router as user_response_router
 from config.settings import app_configs, settings
-
+from app.bot.router import router as bot_router
+from app.bot.app import setup_application
 from .json import json
 
 logging.config.fileConfig(settings.LOGGING_CONF_PATH, disable_existing_loggers=False)
 
 logger = logging.getLogger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator:
+    # Startup
+    application = setup_application(is_webhook=settings.STAGE.is_deployed)
+    await application.initialize()
+    yield
 
 
 app = FastAPI(default_response_class=ORJSONResponse, **app_configs)
@@ -71,3 +81,4 @@ app.include_router(admin_router)
 app.include_router(broadcast_router)
 app.include_router(user_response_type_router)
 app.include_router(user_response_router)
+app.include_router(bot_router)

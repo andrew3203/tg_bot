@@ -22,8 +22,6 @@ class Config(BaseSettings):
     POSTGRES_DB: str
     REDIS_URL: RedisDsn
 
-    SITE_DOMAIN: str = "app.profinancy.ru"
-
     STAGE: Stage = Stage.LOCAL
 
     LOGGING_CONF_PATH: str
@@ -32,7 +30,11 @@ class Config(BaseSettings):
     CORS_ORIGINS_REGEX: str | None = None
     CORS_HEADERS: list[str]
 
-    APP_VERSION: str = "2.0.0"
+    SITE_DOMAIN: str = "8000"
+    TELEGRAM_BOT_TOKEN: str = '12345678'
+    TELEGRAM_BOT_WEBHOOK_SECRET: str = "supersecret"
+
+    APP_VERSION: str = "1.0.0"
 
     S3_BUCKET: str
     S3_KEY_ID: str

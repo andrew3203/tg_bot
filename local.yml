@@ -40,3 +40,13 @@ services:
     container_name: app_local_redis
     env_file:
       - ./.envs/.local/.fastapi
+
+  bot:
+    <<: *fastapi
+    image: app_local_bot
+    container_name: app_local_bot
+    depends_on:
+      - redis
+      - postgres
+    ports: []
+    command: python ./start-polling.py
