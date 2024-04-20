@@ -12,20 +12,22 @@ class MessageCreate(SQLModel, table=False, metadata=None):
         - parents
         - childrens
         - name
+        - tg_alias_name
         - text
         - media
     """
 
     group_id: int = Field(foreign_key="group.id")
-    parents: list[int] = Field(
-        sa_column=sa.Column(sa.ARRAY(sa.Integer), default=[]),
+    parents: dict[str, int] = Field(
+        sa_column=sa.Column(sa.JSON, default={}),
         description="Message parents",
     )
-    childrens: list[int] = Field(
-        sa_column=sa.Column(sa.ARRAY(sa.Integer), default=[]),
+    childrens: dict[str, int] = Field(
+        sa_column=sa.Column(sa.JSON, default={}),
         description="Message childrens",
     )
     name: str = Field(description="Message name")
+    tg_alias_name: str = Field(description="Tg alias name")
     text: str = Field(description="Message text")
     media: list[str] = Field(
         sa_column=sa.Column(sa.ARRAY(sa.String), default=[]),
@@ -42,6 +44,7 @@ class Message(MessageCreate, table=True, metadata=metadata):
         - parents
         - childrens
         - name
+        - tg_alias_name
         - text
         - media
         - click_amount
