@@ -60,7 +60,7 @@ class UserResponseTypeService(BaseModelService):
         await self.session.commit()
         return KeyValueModel(key="OK", value="Обьект удален")
 
-    async def list(
+    async def get_list(
         self, service: PaginationService, page_number: int = 1, page_limit: int = 10
     ) -> PaginatedUserResponseType:
         return await self._list(

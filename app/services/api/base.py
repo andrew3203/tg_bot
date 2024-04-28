@@ -1,4 +1,5 @@
 from typing import TypeVar
+from pydantic import TypeAdapter
 from sqlmodel.ext.asyncio.session import AsyncSession
 from app.schema.auth import TokeModel
 from app.schema.base_model import KeyValueModel
@@ -7,9 +8,11 @@ from app.utils.exceptions import NotFoundException
 from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import SelectOfScalar
 from .pagination import PaginationService, PaginatedData
+from sqlalchemy.sql.elements import Label
 
 Model = TypeVar("Model", bound=SQLModel)
 T = TypeVar("T", bound=SQLModel)
+_T = TypeVar("_T")
 
 
 class BaseModelService:
@@ -59,10 +62,18 @@ class BaseModelService:
     ) -> PaginatedData:
         result = await self.session.exec(statement)
         data = result.all()
-        return await service.list(
+        return await service.get_list(
             data=data,
             schema=schema,
             count=len(data),
             page_number=page_number,
             page_limit=page_limit,
         )
+
+    async def _names_list(
+        self, model: type[Model], columns: list[Label]
+    ) -> list[KeyValueModel]:
+        result = await self.session.exec(
+            select(*columns).select_from(model).with_only_columns(*columns)
+        )
+        return TypeAdapter(list[KeyValueModel]).validate_python(result.mappings().all())

@@ -69,7 +69,7 @@ async def get_action_list(
 ) -> PaginatedAction:
     service = ActionService(token_model=token_model, session=session)
     pagination = PaginationService(request_url=request.url)
-    return await service.list(
+    return await service.get_list(
         page_number=page_number, page_limit=page_limit, service=pagination
     )
 

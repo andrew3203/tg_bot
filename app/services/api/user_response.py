@@ -51,7 +51,7 @@ class UserResponseService(BaseModelService):
     async def delete(self, user_response_id: int) -> KeyValueModel:
         return await self._delete(model=UserResponse, model_id=user_response_id)
 
-    async def list(
+    async def get_list(
         self, service: PaginationService, page_number: int = 1, page_limit: int = 10
     ) -> PaginatedUserResponse:
         return await self._list(

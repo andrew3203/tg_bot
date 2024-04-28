@@ -3,6 +3,7 @@ from app.models import Message, MessageCreate, Group
 from app.schema.base_model import KeyValueModel
 from app.services.api import PaginationService
 from app.schema.api import PaginatedMessage
+from app.schema.models import MessageDataList
 from app.utils.exceptions import NotFoundException
 from .base import BaseModelService
 
@@ -38,13 +39,28 @@ class MessageService(BaseModelService):
     async def delete(self, message_id: int) -> KeyValueModel:
         return await self._delete(model=Message, model_id=message_id)
 
-    async def list(
+    async def get_list(
         self, service: PaginationService, page_number: int = 1, page_limit: int = 10
     ) -> PaginatedMessage:
-        return await self._list(
+        statement = select(Message, Group).select_from(Message)
+        result = await self.session.exec(statement)
+        data = [
+            MessageDataList(
+                **message.model_dump(),
+                group_name=group.name,
+            )
+            for message, group in result.all()
+        ]
+        return await service.get_list(
+            data=data,
             schema=PaginatedMessage,
-            service=service,
-            statement=select(Message),
+            count=len(data),
             page_number=page_number,
             page_limit=page_limit,
+        )
+
+    async def names_list(self) -> list[KeyValueModel]:
+        return await self._names_list(
+            model=Message,
+            columns=[col(Message.id).label("key"), col(Message.name).label("value")],
         )

@@ -45,7 +45,7 @@ class Broadcast(BroadcastCreate, table=True, metadata=metadata):
     __tablename__ = "broadcast"
     __verbouse_name__ = "Рассылка"
 
-    id: int | None = Field(
+    id: int = Field(
         primary_key=True,
         index=True,
         unique=True,

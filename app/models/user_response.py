@@ -75,7 +75,7 @@ class UserResponse(UserResponseCreate, table=True, metadata=metadata):
     __tablename__ = "user_response"
     __verbouse_name__ = "Ответ пользователя"
 
-    id: int | None = Field(
+    id: int = Field(
         primary_key=True,
         index=True,
         unique=True,

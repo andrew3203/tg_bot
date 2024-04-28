@@ -1,4 +1,4 @@
-from sqlmodel import select
+from sqlmodel import col, select
 from app.models import Group, GroupCreate, User, Message
 from app.schema.base_model import KeyValueModel
 from app.services.api.pagination import PaginationService
@@ -42,7 +42,7 @@ class GroupService(BaseModelService):
         await self.session.commit()
         return KeyValueModel(key="OK", value="Обьект удален")
 
-    async def list(
+    async def get_list(
         self, service: PaginationService, page_number: int = 1, page_limit: int = 10
     ) -> PaginatedGroup:
         return await self._list(
@@ -51,4 +51,10 @@ class GroupService(BaseModelService):
             statement=select(Group),
             page_number=page_number,
             page_limit=page_limit,
+        )
+
+    async def names_list(self) -> list[KeyValueModel]:
+        return await self._names_list(
+            model=Group,
+            columns=[col(Group.name).label("key"), col(Group.id).label("value")],
         )

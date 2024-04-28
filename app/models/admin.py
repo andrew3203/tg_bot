@@ -37,7 +37,7 @@ class Admin(AdminCreate, table=True, metadata=metadata):
     __tablename__ = "admin"
     __verbouse_name__ = "Админ"
 
-    id: int | None = Field(
+    id: int = Field(
         primary_key=True,
         index=True,
         unique=True,

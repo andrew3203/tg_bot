@@ -56,7 +56,7 @@ class Message(MessageCreate, table=True, metadata=metadata):
     __tablename__ = "message"
     __verbouse_name__ = "Сообщение"
 
-    id: int | None = Field(
+    id: int = Field(
         primary_key=True,
         index=True,
         unique=True,

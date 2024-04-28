@@ -72,7 +72,7 @@ class AdminService(BaseModelService):
         await self._validate_admin_access(admin_id=admin_id)
         return await self._delete(model=Admin, model_id=admin_id)
 
-    async def list(
+    async def get_list(
         self, service: PaginationService, page_number: int = 1, page_limit: int = 10
     ) -> PaginatedAdmin:
         statement = select(Admin)

@@ -4,12 +4,11 @@ from app.models import (
     User,
     UserResponse,
     UserResponseType,
-    Action,
     Admin,
     Broadcast,
     Group,
-    Message,
 )
+from app.schema.models import ActionDataList, MessageDataList
 
 
 class PaginatedUser(PaginatedDataBase):
@@ -25,7 +24,7 @@ class PaginatedUserResponseType(PaginatedDataBase):
 
 
 class PaginatedAction(PaginatedDataBase):
-    data: list[Action]
+    data: list[ActionDataList]
 
 
 class PaginatedAdmin(PaginatedDataBase):
@@ -41,4 +40,4 @@ class PaginatedGroup(PaginatedDataBase):
 
 
 class PaginatedMessage(PaginatedDataBase):
-    data: list[Message]
+    data: list[MessageDataList]

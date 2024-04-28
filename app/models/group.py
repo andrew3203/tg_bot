@@ -53,7 +53,7 @@ class Group(GroupCreate, table=True, metadata=metadata):
     __tablename__ = "group"
     __verbouse_name__ = "Группа"
 
-    id: int | None = Field(
+    id: int = Field(
         primary_key=True,
         index=True,
         unique=True,

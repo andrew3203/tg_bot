@@ -99,7 +99,7 @@ class BroadcastService(BaseModelService):
         # TODO: run cancel broadcast
         return _broadcast
 
-    async def list(
+    async def get_list(
         self, service: PaginationService, page_number: int = 1, page_limit: int = 10
     ) -> PaginatedBroadcast:
         return await self._list(

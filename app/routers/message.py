@@ -69,9 +69,22 @@ async def get_message_list(
 ) -> PaginatedMessage:
     service = MessageService(token_model=token_model, session=session)
     pagination = PaginationService(request_url=request.url)
-    return await service.list(
+    return await service.get_list(
         page_number=page_number, page_limit=page_limit, service=pagination
     )
+
+
+@router.get(
+    "/names/list",
+    response_model=list[KeyValueModel],
+)
+async def get_message_names_list(
+    request: Request,
+    token_model: Annotated[TokeModel, Depends(get_current_user)],
+    session: AsyncSession = Depends(get_async_session),
+) -> list[KeyValueModel]:
+    service = MessageService(token_model=token_model, session=session)
+    return await service.names_list()
 
 
 @router.delete("", response_model=KeyValueModel)

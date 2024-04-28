@@ -56,7 +56,7 @@ class User(UserCreate, table=True, metadata=metadata):
     __tablename__ = "user"
     __verbouse_name__ = "Пользователь"
 
-    id: int | None = Field(
+    id: int = Field(
         primary_key=True,
         index=True,
         unique=True,

@@ -1,12 +1,11 @@
 from collections.abc import Sequence
-from typing import NamedTuple, TypeVar
+from typing import Any, NamedTuple, TypeVar
 
 from fastapi.datastructures import URL
 from pydantic import HttpUrl
 
 from app.schema.api import PaginatedDataBase
 from app.utils.exceptions import NotFoundException
-from sqlmodel import SQLModel
 
 
 class LimitOffset(NamedTuple):
@@ -88,9 +87,9 @@ class PaginationService:
 
         return PrevNextLinks(prev=prev, next=next)
 
-    async def list(
+    async def get_list(
         self,
-        data: Sequence[SQLModel],
+        data: Sequence[Any],
         schema: type[PaginatedData],
         count: int,
         page_number: int,

@@ -97,7 +97,7 @@ class KeyValueModel(BaseModel):
         :`value | value` - текст соответсвующий этому ключу
     """
 
-    key: str = Field(description="Kлючь для использования во внутренней логике")
+    key: str | int = Field(description="Kлючь для использования во внутренней логике")
     value: str = Field(
         description="текст соответсвующий этому ключу",
     )

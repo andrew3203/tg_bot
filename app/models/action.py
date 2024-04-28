@@ -45,7 +45,7 @@ class Action(ActionCreate, table=True, metadata=metadata):
     __tablename__ = "action"
     __verbouse_name__ = "Действие"
 
-    id: int | None = Field(
+    id: int = Field(
         primary_key=True,
         index=True,
         unique=True,
