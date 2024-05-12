@@ -15,19 +15,19 @@ class ParseMessageService:
     params:
         - `msg_type` - тип сообщения
         - `chat_id` - id чата (id пользователя)
-        - `msg_id` - id сообщения телеграм
+        - `user_msg_id` - id сообщения телеграм
         - `new_message_id` - id нового сообщения (id внутреннего сообщения)
-        - `msg_text` - текст сообщения
+        - `user_msg_text` - текст сообщения
 
-        Либо `new_message_id` будет пустым либо `msg_text`
+        Либо `new_message_id` будет пустым либо `user_msg_text`
     """
 
     def __init__(self) -> None:
         self.msg_type = MsgTypes.UNDEFINED
         self.chat_id: int
-        self.msg_id: int
+        self.user_msg_id: int
         self.new_message_id: int | None = None
-        self.msg_text: str | None = None
+        self.user_msg_text: str | None = None
 
     async def _set_chat_id(self, update: Update):
         callback = update.callback_query
@@ -53,23 +53,23 @@ class ParseMessageService:
         query = update.callback_query
 
         if update.message is not None:
-            self.msg_id = update.message.id
+            self.user_msg_id = update.message.id
             self.msg_type = MsgTypes.MSG
         elif update.edited_message is not None:
-            self.msg_id = update.edited_message.id
+            self.user_msg_id = update.edited_message.id
         elif (
             query is not None
             and query.message is not None
             and query.message.message_id is not None
         ):
-            self.msg_id = query.message.message_id
+            self.user_msg_id = query.message.message_id
         else:
             raise CoreException(msg="Не удалось определить id сообщения")
 
     async def _set_msq_text(self, update: Update):
         callback = update.callback_query
         if update.message is not None and update.message.text is not None:
-            self.msg_text = update.message.text
+            self.user_msg_text = update.message.text
         elif (
             callback is not None
             and callback.data is not None

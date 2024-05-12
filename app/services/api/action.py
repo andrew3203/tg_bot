@@ -1,10 +1,11 @@
 from sqlmodel import select
 from app.models import Action, ActionCreate, Message
 from app.schema.base_model import KeyValueModel
+from app.schema.models.action_type import ActionType
 from app.services.api.pagination import PaginationService
 from app.schema.api import PaginatedAction
 from app.schema.models.action import ActionDataList
-from app.utils.exceptions import NotFoundException
+from app.utils.exceptions import NotFoundException, DataExeption
 from .base import BaseModelService
 
 
@@ -15,8 +16,18 @@ class ActionService(BaseModelService):
         except NotFoundException:
             raise NotFoundException(msg="Сообщение не найдено")
 
+    async def _validate_action_type(self, data: ActionCreate) -> None:
+        if (
+            data.action_type == ActionType.SAVE_RESPONSE
+            and "user_response_type_name" not in data.params.keys()
+        ):
+            raise DataExeption(
+                msg="Поле `user_response_type_name` обязательно к заполнению"
+            )
+
     async def create(self, data: ActionCreate) -> Action:
         await self._validate_group(data=data)
+        await self._validate_action_type(data=data)
         return await self._create(data=data, model=Action)
 
     async def get(self, action_id: int) -> Action:
@@ -24,6 +35,7 @@ class ActionService(BaseModelService):
 
     async def update(self, data: ActionCreate, action_id: int) -> Action:
         await self._validate_group(data=data)
+        await self._validate_action_type(data=data)
         return await self._update(model=Action, model_id=action_id, data=data)
 
     async def delete(self, action_id: int) -> KeyValueModel:

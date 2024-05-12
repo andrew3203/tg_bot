@@ -19,17 +19,17 @@ def get_group() -> Group:
 def get_messages() -> list[Message]:
     result = [
         Message(
-            id=data.id,
+            id=item.id,
             group_id=1,
             parents={},
             childrens={},
-            name=data.name,
-            tg_alias_name=data.name,
-            text=data.name,
+            name=item.name,
+            tg_alias_name=item.name,
+            text=item.name,
             media=[],
             media_types=[],
         )
-        for data in BaseMessageNames
+        for item in BaseMessageNames
     ]
 
     return result

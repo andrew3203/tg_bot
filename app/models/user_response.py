@@ -54,7 +54,8 @@ class UserResponseCreate(SQLModel, table=False, metadata=None):
     user_id: int = Field(foreign_key="user.id", description="User id")
     message_id: int = Field(foreign_key="message.id", description="Message id")
     response_type_name: str = Field(
-        foreign_key="user_response_type.name", description="Response type name"
+        foreign_key="user_response_type.name",
+        description="Response type name",
     )
     text: str | None = Field(description="Response text", default=None, nullable=True)
 

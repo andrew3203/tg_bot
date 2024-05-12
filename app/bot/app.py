@@ -10,7 +10,7 @@ from telegram.ext import (
 import logging.config
 from app.bot.repo import Repository
 from config.settings import settings
-from app.bot.services import SendMessageService, ParseMessageService
+from app.bot.services import SendMessageService, ParseMessageService, ActionService
 from app.bot.selectors import MessageSelector
 
 from app.database import get_async_session
@@ -31,6 +31,7 @@ async def command_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             parser=ParseMessageService(),
             service=SendMessageService(bot=application.bot),
             selector=MessageSelector(session=session),
+            action_service=ActionService(session=session),
         )
         await repo.process(update=update, context=context)
 
@@ -42,6 +43,7 @@ async def query_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
             parser=ParseMessageService(),
             service=SendMessageService(bot=application.bot),
             selector=MessageSelector(session=session),
+            action_service=ActionService(session=session),
         )
         await repo.process(update=update, context=context)
 
@@ -60,6 +62,7 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> N
             parser=ParseMessageService(),
             service=SendMessageService(bot=application.bot),
             selector=MessageSelector(session=session),
+            action_service=ActionService(session=session),
         )
         await repo.process_error(update=update, context=context)
 
