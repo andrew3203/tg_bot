@@ -3,10 +3,20 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.database import get_async_session
 from app.schema.auth import AdminLoginModel, AdminSignupModel
+from app.schema.base_model import KeyValueModel
 from app.services.api.auth import auth_service
 
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+
+@router.get(
+    "",
+    response_model=KeyValueModel,
+    name="auth",
+)
+async def auth(data: AdminLoginModel) -> KeyValueModel:
+    return KeyValueModel(key="ok", value="valid")
 
 
 @router.post(

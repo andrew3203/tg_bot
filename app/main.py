@@ -58,11 +58,11 @@ async def core_error_handler(request: Request, exc: BaseException) -> ORJSONResp
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
-    allow_origin_regex=settings.CORS_ORIGINS_REGEX,
+    allow_origins=["*"],
+    # allow_origin_regex=settings.CORS_ORIGINS_REGEX,
     allow_credentials=True,
     allow_methods=("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"),
-    allow_headers=settings.CORS_HEADERS,
+    allow_headers=["*"],
 )
 
 
