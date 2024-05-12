@@ -82,3 +82,15 @@ async def delete_user(
 ) -> KeyValueModel:
     service = UserService(token_model=token_model, session=session)
     return await service.delete(user_id=user_id)
+
+
+@router.get(
+    "/fields",
+    response_model=list[KeyValueModel],
+)
+async def get_user_fields(
+    token_model: Annotated[TokeModel, Depends(get_current_user)],
+    session: AsyncSession = Depends(get_async_session),
+) -> list[KeyValueModel]:
+    service = UserService(token_model=token_model, session=session)
+    return await service.get_user_fields()

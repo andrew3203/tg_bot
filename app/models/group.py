@@ -25,11 +25,11 @@ class GroupCreate(SQLModel, table=False):
     criterion_field: str = Field(description="Criterion field")
     criterion_field_type: str = Field(description="Criterion field type")
     criterion_value: str = Field(description="Criterion value")
-    criterion_value_type: Literal["str", "int", "float", "bool"] = Field(
+    criterion_value_type: Literal["str", "int", "float", "bool", "datetime"] = Field(
         sa_column=sa.Column(sa.String),
         description="Criterion value type",
     )
-    criterion_rule: Literal["=", "<", "<=", ">", ">=", "!="] = Field(
+    criterion_rule: Literal["=", "<", "<=", ">", ">="] = Field(
         sa_column=sa.Column(sa.String),
         description="Criterion rule",
     )

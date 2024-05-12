@@ -5,17 +5,29 @@ from app.services.api.pagination import PaginationService
 from app.schema.api import PaginatedGroup
 from app.utils.exceptions import DataExeption
 from .base import BaseModelService
+import asyncio
+from app.services.utils import apply_group_criteria
 
 
 class GroupService(BaseModelService):
     async def create(self, data: GroupCreate) -> Group:
-        return await self._create(data=data, model=Group)
+        group = await self._create(data=data, model=Group)
+        await self.session.commit()
+        await self._apply_group_criteria(group=group)
+        return group
 
     async def get(self, group_id: int) -> Group:
         return await self._get(model=Group, model_id=group_id)
 
+    async def _apply_group_criteria(self, group: Group) -> None:
+        loop = asyncio.get_running_loop()
+        loop.run_in_executor(None, lambda: apply_group_criteria(group=group))
+
     async def update(self, data: GroupCreate, group_id: int) -> Group:
-        return await self._update(model=Group, model_id=group_id, data=data)
+        group = await self._update(model=Group, model_id=group_id, data=data)
+        await self.session.commit()
+        await self._apply_group_criteria(group=group)
+        return group
 
     async def _chech_user_exsists(self, group: Group) -> None:
         result = await self.session.exec(select(User).where(User.group_id == group.id))

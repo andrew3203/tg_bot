@@ -1,3 +1,4 @@
+from types import UnionType
 from sqlmodel import select
 from app.models import User, UserCreate, Group
 from app.schema.base_model import KeyValueModel
@@ -38,3 +39,15 @@ class UserService(BaseModelService):
             page_number=page_number,
             page_limit=page_limit,
         )
+
+    async def get_user_fields(self) -> list[KeyValueModel]:
+        result = []
+        for field_name, info in User.model_fields.items():
+            if isinstance(info.annotation, UnionType):
+                value = str(info.annotation).split(" | ")[0]
+                if "datetime" in value:
+                    value = "datetime"
+            else:
+                value = info.annotation.__name__  # type: ignore
+            result.append(KeyValueModel(key=field_name, value=value))
+        return result

@@ -50,7 +50,9 @@ class Repository:
             await self.service.send_message(user_id=user.id, message=message)
 
     async def process_error(
-        self, update: Update | object, context: ContextTypes.DEFAULT_TYPE
+        self,
+        update: Update | object,
+        context: ContextTypes.DEFAULT_TYPE,
     ):
         if isinstance(update, Update):
             if isinstance(context.error, MessageNotFoundException):
