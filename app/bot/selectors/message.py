@@ -1,9 +1,12 @@
+import logging
 from sqlmodel import select
 from app.models import Message, User
 from sqlmodel.ext.asyncio.session import AsyncSession
 from app.bot.exceptions import UserNotFoundException, MessageNotFoundException
 from app.redis import AIORedis
 from redis.asyncio import Redis
+
+logger = logging.getLogger(__name__)
 
 
 class MessageSelector:
@@ -134,4 +137,5 @@ class MessageSelector:
         )
         if message_id is None:
             raise MessageNotFoundException(msg="Сообщение не найдено")
-        return await self.get_message_by_id(message_id=message_id)
+        logger.error(f"user_id: {user_id}, message_id: {message_id}")
+        return await self.get_message_by_id(message_id=int(message_id))

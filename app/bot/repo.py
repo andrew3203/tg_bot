@@ -69,7 +69,6 @@ class Repository:
         await self.action_service.process_action(
             message=message,
             user=user,
-            bot=context.bot,
             **params,
         )
 
@@ -110,7 +109,7 @@ class Repository:
             update_str = update.to_dict() if isinstance(update, Update) else str(update)
             text = (
                 "Возникла ошибка\n"
-                f"<pre>{html.escape(tb_string)}</pre>\n\n"
+                f"<pre>{html.escape(tb_string)[0:3096]}</pre>\n\n"
                 f"<pre>update: {html.escape(json.dumps(update_str, indent=2, ensure_ascii=False))}"
                 "</pre>\n\n"
                 f"<pre>chat_data: {html.escape(str(context.chat_data))}</pre>\n\n"

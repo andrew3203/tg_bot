@@ -19,7 +19,6 @@ def get_group() -> Group:
 def get_messages() -> list[Message]:
     result = [
         Message(
-            id=item.id,
             group_id=1,
             parents={},
             childrens={},

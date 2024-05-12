@@ -30,9 +30,7 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     with sqlmodel.Session(bind=op.get_bind()) as session:
-        for message in get_messages():
-            session.exec(delete(Message).where(Message.id == message.id))
-        
+        session.exec(delete(Message))
         group = get_group() 
         session.exec(delete(Group).where(Group.id == group.id))
         session.commit()

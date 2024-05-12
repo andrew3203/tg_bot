@@ -24,7 +24,7 @@ logging.config.fileConfig(settings.LOGGING_CONF_PATH, disable_existing_loggers=F
 logger = logging.getLogger(__name__)
 
 
-async def command_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     async for session in get_async_session():
         repo = Repository(
             session=session,
@@ -48,12 +48,6 @@ async def query_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         await repo.process(update=update, context=context)
 
 
-async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Echo the user message."""
-    if update.message is not None and update.message.text is not None:
-        await update.message.reply_text(update.message.text)
-
-
 async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
     logger.error("Exception while handling an update:", exc_info=context.error)
     async for session in get_async_session():
@@ -68,9 +62,8 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> N
 
 
 def add_handlers(application: Application) -> None:
-    application.add_handler(MessageHandler(filters.COMMAND, command_handler))
+    application.add_handler(MessageHandler(filters.COMMAND, message_handler))
     application.add_handler(CallbackQueryHandler(query_handler))
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
     application.add_error_handler(error_handler)
 
