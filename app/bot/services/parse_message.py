@@ -13,6 +13,10 @@ class MsgTypes(str, Enum):
 class ParseMessageService:
     def __init__(self) -> None:
         self.msg_type = MsgTypes.UNDEFINED
+        self.chat_id: int | None = None
+        self.msg_id: int | None = None
+        self.message_id: int | None = None
+        self.msg_text: str | None = None
 
     async def _set_chat_id(self, update: Update):
         callback = update.callback_query
@@ -35,11 +39,19 @@ class ParseMessageService:
         return self.chat_id
 
     async def _set_msq_id(self, update: Update):
+        query = update.callback_query
+
         if update.message is not None:
             self.msg_id = update.message.id
             self.msg_type = MsgTypes.MSG
         elif update.edited_message is not None:
             self.msg_id = update.edited_message.id
+        elif (
+            query is not None
+            and query.message is not None
+            and query.message.message_id is not None
+        ):
+            self.msg_id = query.message.message_id
         else:
             raise CoreException(msg="Не удалось определить id сообщения")
 
@@ -56,3 +68,8 @@ class ParseMessageService:
             self.msg_type = MsgTypes.FLY_BTN
         else:
             raise CoreException(msg="Не удалось определить id сообщения")
+
+    async def init(self, update: Update) -> None:
+        await self._set_chat_id(update=update)
+        await self._set_msq_id(update=update)
+        await self._set_msq_text(update=update)

@@ -28,6 +28,7 @@ def upgrade() -> None:
         sa.Column("tg_alias_name", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
         sa.Column("text", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
         sa.Column("media", sa.ARRAY(sa.String()), nullable=True),
+        sa.Column("media_types", sa.ARRAY(sa.String()), nullable=True),
         sa.Column("click_amount", sa.Integer(), nullable=False),
         sa.Column("uclick_amount", sa.Integer(), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),

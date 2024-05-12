@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, Depends, File, Query, Request, UploadFile
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.database import get_async_session
@@ -9,7 +9,7 @@ from app.services.api import PaginationService, MessageService
 from app.services.api.auth import get_current_user
 from app.schema.auth import TokeModel
 from app.models import Message, MessageCreate
-
+from app.services.files import S3Service
 
 router = APIRouter(prefix="/message", tags=["message"])
 
@@ -95,3 +95,17 @@ async def delete_message(
 ) -> KeyValueModel:
     service = MessageService(token_model=token_model, session=session)
     return await service.delete(message_id=message_id)
+
+
+@router.post(
+    "/file",
+    response_model=str,
+    name="message:save-image",
+)
+async def save_image(
+    token_model: Annotated[TokeModel, Depends(get_current_user)],
+    image: UploadFile = File(description="Файл фотографии"),
+) -> str:
+    service = S3Service()
+    url = service.upload(file=image)
+    return url

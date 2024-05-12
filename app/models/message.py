@@ -47,6 +47,7 @@ class Message(MessageCreate, table=True, metadata=metadata):
         - tg_alias_name
         - text
         - media
+        - media_types
         - click_amount
         - uclick_amount
         - created_at
@@ -62,6 +63,10 @@ class Message(MessageCreate, table=True, metadata=metadata):
         unique=True,
         default=None,
         description="Primary key",
+    )
+    media_types: list[str] = Field(
+        sa_column=sa.Column(sa.ARRAY(sa.String), default=[]),
+        description="Message media types",
     )
     click_amount: int = Field(default=0, description="Click amount")
     uclick_amount: int = Field(default=0, description="Unique click amount")

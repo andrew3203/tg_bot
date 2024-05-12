@@ -1,4 +1,5 @@
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from sqlmodel import select
+from telegram import Update
 from telegram.ext import (
     Application,
     ContextTypes,
@@ -7,22 +8,27 @@ from telegram.ext import (
     CallbackQueryHandler,
     CommandHandler,
 )
+from app.models import User, Message
 from config.settings import settings
+from app.bot.services.send_message import SendMessageService
+from app.bot.services.parse_message import ParseMessageService
+from app.database import get_async_session
 
 application: Application
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Отправляет сообщение с встроенной клавиатурой при команде /start."""
-    keyboard = [
-        [InlineKeyboardButton("Опция 1", callback_data="1")],
-        [InlineKeyboardButton("Опция 2", callback_data="2")],
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    if update.effective_chat is not None:
-        await update.effective_chat.send_message(
-            "Привет! Выберите опцию:", reply_markup=reply_markup
-        )
+    parser = ParseMessageService()
+    await parser.init(update=update)
+    service = SendMessageService(bot=application.bot)
+
+    async for session in get_async_session():
+        usr_result = await session.exec(select(User).where(User.id == parser.chat_id))
+        user = usr_result.one()
+        message_result = await session.exec(select(Message).where(Message.id == 1))
+        message = message_result.one()
+        await service.send_message(user=user, message=message)
 
 
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -31,6 +37,19 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if query is not None:
         await query.answer()
         await query.edit_message_text(text=f"Выбрана опция: {query.data}")
+
+    parser = ParseMessageService()
+    await parser.init(update=update)
+    service = SendMessageService(bot=application.bot)
+
+    async for session in get_async_session():
+        usr_result = await session.exec(select(User).where(User.id == parser.chat_id))
+        user = usr_result.one()
+        message_result = await session.exec(
+            select(Message).where(Message.id == parser.message_id)
+        )
+        message = message_result.one()
+        await service.send_message(user=user, message=message)
 
 
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

@@ -8,6 +8,7 @@ class UserCreate(SQLModel, table=False, metadata=None):
     """
     User Create:
 
+        - id
         - group_id
         - firstname
         - lastname
@@ -20,6 +21,13 @@ class UserCreate(SQLModel, table=False, metadata=None):
         - golden_tickets_amount
     """
 
+    id: int = Field(
+        primary_key=True,
+        index=True,
+        unique=True,
+        default=None,
+        description="Primary key",
+    )
     group_id: int = Field(foreign_key="group.id")
     firstname: str = Field(description="Firstname")
     lastname: str | None = Field(description="Lastname", nullable=True)
@@ -38,7 +46,6 @@ class User(UserCreate, table=True, metadata=metadata):
     """
     User:
 
-        - id
         - group_id
         - firstname
         - lastname
@@ -56,13 +63,6 @@ class User(UserCreate, table=True, metadata=metadata):
     __tablename__ = "user"
     __verbouse_name__ = "Пользователь"
 
-    id: int = Field(
-        primary_key=True,
-        index=True,
-        unique=True,
-        default=None,
-        description="Primary key",
-    )
     created_at: datetime = Field(
         default=datetime.now(UTC),
         sa_column=sa.Column(sa.DateTime(timezone=True), nullable=False),

@@ -1,21 +1,26 @@
+from typing import Annotated
 from fastapi import APIRouter, Depends
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.database import get_async_session
 from app.schema.auth import AdminLoginModel, AdminSignupModel
+from app.schema.auth.token_model import TokeModel
 from app.schema.base_model import KeyValueModel
 from app.services.api.auth import auth_service
+from app.services.api.auth.depends import get_current_user
 
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-@router.get(
+@router.options(
     "",
     response_model=KeyValueModel,
     name="auth",
 )
-async def auth(data: AdminLoginModel) -> KeyValueModel:
+async def auth(
+    token_model: Annotated[TokeModel, Depends(get_current_user)],
+) -> KeyValueModel:
     return KeyValueModel(key="ok", value="valid")
 
 

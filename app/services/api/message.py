@@ -6,6 +6,7 @@ from app.schema.api import PaginatedMessage
 from app.schema.models import MessageDataList
 from app.utils.exceptions import NotFoundException
 from .base import BaseModelService
+from app.utils.media_type import get_media_type
 
 
 class MessageService(BaseModelService):
@@ -23,10 +24,19 @@ class MessageService(BaseModelService):
         if result.one() != len(message_ids):
             raise NotFoundException(msg="Не все сообщения родителей и детей найдены")
 
+    async def _get_media_types(self, data: MessageCreate) -> list[str]:
+        media_types = []
+        for media_url in data.media:
+            media_type = await get_media_type(media_url=media_url)
+            media_types.append(media_type.value)
+        return media_types
+
     async def create(self, data: MessageCreate) -> Message:
         await self._validate_group(data=data)
         await self._validate_messages(data=data)
-        return await self._create(data=data, model=Message)
+        media_types = await self._get_media_types(data=data)
+        new_data = Message(**data.model_dump(), media_types=media_types)
+        return await self._create(data=new_data, model=Message)
 
     async def get(self, message_id: int) -> Message:
         return await self._get(model=Message, model_id=message_id)
@@ -34,7 +44,10 @@ class MessageService(BaseModelService):
     async def update(self, data: MessageCreate, message_id: int) -> Message:
         await self._validate_group(data=data)
         await self._validate_messages(data=data)
-        return await self._update(model=Message, model_id=message_id, data=data)
+        media_types = await self._get_media_types(data=data)
+        new_data = Message(**data.model_dump(), media_types=media_types)
+        new_data.id = message_id
+        return await self._update(model=Message, model_id=message_id, data=new_data)
 
     async def delete(self, message_id: int) -> KeyValueModel:
         return await self._delete(model=Message, model_id=message_id)

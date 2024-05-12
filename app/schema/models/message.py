@@ -1,6 +1,31 @@
 from datetime import datetime
 from pydantic import Field
 from ..base_model import BaseModel
+from enum import Enum
+
+
+class MediaType(str, Enum):
+    MP4 = "mp4"
+    MOV = "mov"
+    PNG = "png"
+    JPG = "jpg"
+    JPEG = "jpeg"
+    GIF = "gif"
+    WEBP = "webp"
+
+    @property
+    def is_video(self):
+        return self in [MediaType.MP4, MediaType.MOV]
+
+    @property
+    def is_image(self):
+        return self in [
+            MediaType.PNG,
+            MediaType.JPG,
+            MediaType.JPEG,
+            MediaType.GIF,
+            MediaType.WEBP,
+        ]
 
 
 class MessageDataList(BaseModel):

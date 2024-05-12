@@ -31,7 +31,7 @@ class Config(BaseSettings):
     CORS_HEADERS: list[str]
 
     SITE_DOMAIN: str = "8000"
-    TELEGRAM_BOT_TOKEN: str = '12345678'
+    TELEGRAM_BOT_TOKEN: str = "12345678"
     TELEGRAM_BOT_WEBHOOK_SECRET: str = "supersecret"
 
     APP_VERSION: str = "1.0.0"
@@ -40,7 +40,7 @@ class Config(BaseSettings):
     S3_KEY_ID: str
     S3_KEY: str
     S3_REGION_NAME: str
-    S3_ENDPOINT_URL: str
+    S3_DOMAIN: str
 
     @classmethod
     def _allowed_hosts_list(cls, value: str) -> list[str]:
