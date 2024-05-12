@@ -33,6 +33,7 @@ class Config(BaseSettings):
     SITE_DOMAIN: str = "8000"
     TELEGRAM_BOT_TOKEN: str = "12345678"
     TELEGRAM_BOT_WEBHOOK_SECRET: str = "supersecret"
+    LOGS_CHAT_ID: int
 
     APP_VERSION: str = "1.0.0"
 

@@ -18,9 +18,7 @@ class S3Service:
         self._aws_bucket = settings.S3_BUCKET
         self._aws_domain = settings.S3_DOMAIN
         self._region_name = settings.S3_REGION_NAME
-
         self._service_name = "s3"
-
         self._path = "messages"
 
     def _get_file_url(self, file_path: str) -> str:
@@ -50,7 +48,7 @@ class S3Service:
                 file.file,
                 settings.S3_BUCKET,
                 file_path,
-                ExtraArgs={"ContentType": file.content_type},
+                ExtraArgs={"ContentType": file.content_type, "ACL": "public-read"},
             )
             client.close()
         except Exception as e:

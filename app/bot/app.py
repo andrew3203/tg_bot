@@ -1,4 +1,4 @@
-from sqlmodel import select
+import logging
 from telegram import Update
 from telegram.ext import (
     Application,
@@ -6,50 +6,44 @@ from telegram.ext import (
     MessageHandler,
     filters,
     CallbackQueryHandler,
-    CommandHandler,
 )
-from app.models import User, Message
+import logging.config
+from app.bot.repo import Repository
 from config.settings import settings
-from app.bot.services.send_message import SendMessageService
-from app.bot.services.parse_message import ParseMessageService
+from app.bot.services import SendMessageService, ParseMessageService
+from app.bot.selectors import MessageSelector
+
 from app.database import get_async_session
+
 
 application: Application
 
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет сообщение с встроенной клавиатурой при команде /start."""
-    parser = ParseMessageService()
-    await parser.init(update=update)
-    service = SendMessageService(bot=application.bot)
+logging.config.fileConfig(settings.LOGGING_CONF_PATH, disable_existing_loggers=False)
 
+logger = logging.getLogger(__name__)
+
+
+async def command_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     async for session in get_async_session():
-        usr_result = await session.exec(select(User).where(User.id == parser.chat_id))
-        user = usr_result.one()
-        message_result = await session.exec(select(Message).where(Message.id == 1))
-        message = message_result.one()
-        await service.send_message(user=user, message=message)
-
-
-async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Обрабатывает CallbackQuery."""
-    query = update.callback_query
-    if query is not None:
-        await query.answer()
-        await query.edit_message_text(text=f"Выбрана опция: {query.data}")
-
-    parser = ParseMessageService()
-    await parser.init(update=update)
-    service = SendMessageService(bot=application.bot)
-
-    async for session in get_async_session():
-        usr_result = await session.exec(select(User).where(User.id == parser.chat_id))
-        user = usr_result.one()
-        message_result = await session.exec(
-            select(Message).where(Message.id == parser.message_id)
+        repo = Repository(
+            session=session,
+            parser=ParseMessageService(),
+            service=SendMessageService(bot=application.bot),
+            selector=MessageSelector(session=session),
         )
-        message = message_result.one()
-        await service.send_message(user=user, message=message)
+        await repo.process(update=update, context=context)
+
+
+async def query_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    async for session in get_async_session():
+        repo = Repository(
+            session=session,
+            parser=ParseMessageService(),
+            service=SendMessageService(bot=application.bot),
+            selector=MessageSelector(session=session),
+        )
+        await repo.process(update=update, context=context)
 
 
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -58,10 +52,24 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text(update.message.text)
 
 
+async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
+    logger.error("Exception while handling an update:", exc_info=context.error)
+    async for session in get_async_session():
+        repo = Repository(
+            session=session,
+            parser=ParseMessageService(),
+            service=SendMessageService(bot=application.bot),
+            selector=MessageSelector(session=session),
+        )
+        await repo.process_error(update=update, context=context)
+
+
 def add_handlers(application: Application) -> None:
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CallbackQueryHandler(button))
+    application.add_handler(MessageHandler(filters.COMMAND, command_handler))
+    application.add_handler(CallbackQueryHandler(query_handler))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
+
+    application.add_error_handler(error_handler)
 
 
 async def process_event(payload: dict, application: Application) -> None:

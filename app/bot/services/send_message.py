@@ -1,5 +1,5 @@
 from telegram import Bot
-from app.models import Message, User
+from app.models import Message
 from telegram import InputMediaPhoto, InputMediaVideo, InputMedia
 from app.schema.models.message import MediaType
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
@@ -49,17 +49,17 @@ class SendMessageService:
 
         return InlineKeyboardMarkup(keyboard)
 
-    async def send_message(self, message: Message, user: User) -> None:
+    async def send_message(self, message: Message, user_id: int) -> None:
         media = await self._get_message_media(message)
         if media is not None:
             await self.bot.send_media_group(
-                chat_id=user.id,
+                chat_id=user_id,
                 media=media,
             )
 
         reply_markup = await self.get_markup(message)
         await self.bot.send_message(
-            chat_id=user.id,
+            chat_id=user_id,
             text=message.text,
             parse_mode="HTML",
             reply_markup=reply_markup,

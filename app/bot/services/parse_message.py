@@ -1,6 +1,6 @@
 from telegram import Update
 
-from app.utils.exceptions import CoreException
+from app.bot.exceptions import CoreException
 from enum import Enum
 
 
@@ -11,11 +11,22 @@ class MsgTypes(str, Enum):
 
 
 class ParseMessageService:
+    """
+    params:
+        - `msg_type` - тип сообщения
+        - `chat_id` - id чата (id пользователя)
+        - `msg_id` - id сообщения телеграм
+        - `new_message_id` - id нового сообщения (id внутреннего сообщения)
+        - `msg_text` - текст сообщения
+
+        Либо `new_message_id` будет пустым либо `msg_text`
+    """
+
     def __init__(self) -> None:
         self.msg_type = MsgTypes.UNDEFINED
-        self.chat_id: int | None = None
-        self.msg_id: int | None = None
-        self.message_id: int | None = None
+        self.chat_id: int
+        self.msg_id: int
+        self.new_message_id: int | None = None
         self.msg_text: str | None = None
 
     async def _set_chat_id(self, update: Update):
@@ -64,7 +75,7 @@ class ParseMessageService:
             and callback.data is not None
             and callback.data.isdigit()
         ):
-            self.message_id = int(callback.data)
+            self.new_message_id = int(callback.data)
             self.msg_type = MsgTypes.FLY_BTN
         else:
             raise CoreException(msg="Не удалось определить id сообщения")
