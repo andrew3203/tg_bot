@@ -68,5 +68,5 @@ class GroupService(BaseModelService):
     async def names_list(self) -> list[KeyValueModel]:
         return await self._names_list(
             model=Group,
-            columns=[col(Group.name).label("key"), col(Group.id).label("value")],
+            columns=[col(Group.name).label("value"), col(Group.id).label("key")],
         )

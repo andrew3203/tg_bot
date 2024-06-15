@@ -74,6 +74,18 @@ async def get_group_list(
     )
 
 
+@router.get(
+    "/names/list",
+    response_model=list[KeyValueModel],
+)
+async def get_group_names_list(
+    token_model: Annotated[TokeModel, Depends(get_current_user)],
+    session: AsyncSession = Depends(get_async_session),
+) -> list[KeyValueModel]:
+    service = GroupService(token_model=token_model, session=session)
+    return await service.names_list()
+
+
 @router.delete("", response_model=KeyValueModel)
 async def delete_group(
     token_model: Annotated[TokeModel, Depends(get_current_user)],
