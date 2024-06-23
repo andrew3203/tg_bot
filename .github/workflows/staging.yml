@@ -3,7 +3,7 @@ name: staging
 on:
   push:
     branches:
-      - main
+      - stagaig
 
 jobs:
   build:
