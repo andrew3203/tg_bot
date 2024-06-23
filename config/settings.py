@@ -30,7 +30,7 @@ class Config(BaseSettings):
     CORS_ORIGINS_REGEX: str | None = None
     CORS_HEADERS: list[str]
 
-    SITE_DOMAIN: str = "8000"
+    SITE_DOMAIN: str = "8888"
     TELEGRAM_BOT_TOKEN: str = "12345678"
     TELEGRAM_BOT_WEBHOOK_SECRET: str = "supersecret"
     LOGS_CHAT_ID: int
