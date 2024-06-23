@@ -29,11 +29,15 @@ services:
       dockerfile: ./compose/production/postgres/Dockerfile
     image: app_production_postgres
     container_name: app_local_postgres
+    ports:
+      - "5433:5433"  
     volumes:
       - app_local_postgres_data:/var/lib/postgresql/data
       - app_local_postgres_data_backups:/backups
     env_file:
       - ./.envs/.local/.postgres
+    command: -p 5433
+
 
   redis:
     image: redis:6
