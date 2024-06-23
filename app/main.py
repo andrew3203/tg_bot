@@ -18,6 +18,7 @@ from app.routers.admin import router as admin_router
 from app.routers.broadcast import router as broadcast_router
 from app.routers.user_response_type import router as user_response_type_router
 from app.routers.user_response import router as user_response_router
+from app.routers.webhoks import router as webhoks_router
 from config.settings import app_configs, settings
 from app.bot.router import router as bot_router
 from app.bot.app import setup_application
@@ -82,3 +83,4 @@ app.include_router(broadcast_router)
 app.include_router(user_response_type_router)
 app.include_router(user_response_router)
 app.include_router(bot_router)
+app.include_router(webhoks_router)

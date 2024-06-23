@@ -8,11 +8,11 @@ from fastapi import (
 from app.bot.utils import remove_buttons_with_callback, validate_webhook_secret
 from app.bot.app import process_event
 
-router = APIRouter()
+router = APIRouter(prefix="/webhook", tags=["Webhook"])
 
 
 @router.post(
-    "/webhook",
+    "/bot",
     dependencies=[Depends(validate_webhook_secret)],
     status_code=status.HTTP_200_OK,
     include_in_schema=False,
