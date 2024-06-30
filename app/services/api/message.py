@@ -17,7 +17,7 @@ class MessageService(BaseModelService):
             raise NotFoundException(msg="Группа не найдена")
 
     async def _validate_messages(self, data: MessageCreate) -> None:
-        message_ids = list(data.parents.values()) + list(data.childrens.values())
+        message_ids = list(set(list(data.parents.values()) + list(data.childrens.values())))
         result = await self.session.exec(
             select(func.count()).where(col(Message.id).in_(message_ids))
         )
